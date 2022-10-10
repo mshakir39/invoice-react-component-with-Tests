@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "components-e2e": "apps/components-e2e",
+    "dashboard": "apps/dashboard",
+    "dashboard-components": "libs/dashboard/components"
+  }
+}

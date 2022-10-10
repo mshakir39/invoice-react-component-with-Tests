@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": "src",
+    "declaration": false,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": false,
+    "jsx": "react",
+    "lib": ["es5", "es6", "es7", "es2017", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "outDir": "build/lib",
+    "rootDirs": ["src", "stories"],
+    "skipLibCheck": true,
+    "strict": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "target": "es5"
+  },
+  "extends": "../tsconfig.base.json",
+  "exclude": [
+    "../**/*.spec.js",
+    "../**/*.test.js",
+    "../**/*.spec.ts",
+    "../**/*.test.ts",
+    "../**/*.spec.tsx",
+    "../**/*.test.tsx",
+    "../**/*.spec.jsx",
+    "../**/*.test.jsx"
+  ],
+  "include": ["../**/*"]
+}
