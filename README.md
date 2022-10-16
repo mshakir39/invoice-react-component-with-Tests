@@ -15,22 +15,21 @@ npm install -g @nrwl/cli
 * `accept-button.spec.tsx` - the Jest tests for the button
 * `accept-button.stories.tsx` - the Storybook presentation of the button (see this standalone for yourself but know that Cypress tests use this too)
 
-## Running the Jest tests
+## Running the Jest tests for the three existing components
 
 ```bash
-nx test dashboard
 nx test dashboard-components
 ```
 
-## Seeing the components in Storybook
+## Seeing the three existing components in Storybook
 
 ```
 nx run dashboard-components:storybook
 ```
 
-One that is up, go to:
+Once that is up, go to:
 
-* [Simple button on localhost:4400](http://localhost:4400/?path=/story/simple-accept-button--primary)
+* [Simple button on localhost:4400](http://localhost:4400/?path=/story/simple-accept-button--primary) ('Basic' within here has visible evidence of button press that is tested in the cypress test - see below)
 * [Date Picker on localhost:4400](http://localhost:4400/?path=/story/simple-date-input--primary)
 * [Text input on locahost:4400](http://localhost:4400/?path=/story/simple-text-input--primary)
 
@@ -41,3 +40,5 @@ npx nx e2e components-e2e
 ```
 
 [apps/components-e2e/src/integration/accept-button.cy.ts](apps/components-e2e/src/integration/accept-button.cy.ts) is the Cypress test source (Cypress uses Mocha)
+
+Only simple 'accept button' has Cypress tests. Date-picker and text-input do not and there is no need for you to write them.
