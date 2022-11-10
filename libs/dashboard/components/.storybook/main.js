@@ -2,7 +2,7 @@ const rootMain = require("../../../../.storybook/main");
 
 module.exports = {
   ...rootMain,
-
+  staticDirs: ['../storybook_public'],
   core: { ...rootMain.core, builder: "webpack5" },
 
   stories: [
