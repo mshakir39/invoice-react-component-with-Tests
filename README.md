@@ -36,9 +36,15 @@ Once that is up, go to:
 ## Running the Cypress tests
 
 ```bash
-npx nx e2e components-e2e
+nx e2e components-e2e
 ```
 
 [apps/components-e2e/src/integration/accept-button.cy.ts](apps/components-e2e/src/integration/accept-button.cy.ts) is the Cypress test source (Cypress uses Mocha)
 
 Only simple 'accept button' has Cypress tests. Date-picker and text-input do not and there is no need for you to write them.
+
+## Linting the source before completion
+
+```bash
+nx run-many --target=lint --all
+```
