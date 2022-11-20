@@ -18,6 +18,4 @@ export default {
 
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   coverageDirectory: "../../../coverage/libs/dashboard/components",
-
-  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
 };
