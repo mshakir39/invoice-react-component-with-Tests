@@ -22,9 +22,7 @@
     "target": "es2016",
     "types": ["node", "jest", "cypress"],
     "paths": {
-      "@upwork/dashboard-components": [
-        "libs/dashboard/components/src/index.ts"
-      ]
+      "@upwork/dashboard-components": ["libs/dashboard/components/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
