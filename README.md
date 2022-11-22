@@ -7,6 +7,10 @@ npm install
 npm install -g @nrwl/cli
 ```
 
+## Running the mock API server
+
+There is a mock [json-server](https://github.com/typicode/json-server) that should be used to mock API requests. You can start it by running `npm run api`.
+
 ## The main example component in this repo "Accept Button" (simple button)
 
 [libs/dashboard/components/src/lib/simple/accept-button](libs/dashboard/components/src/lib/simple/accept-button/) is the button's source directory
