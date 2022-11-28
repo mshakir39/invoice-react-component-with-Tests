@@ -5,6 +5,6 @@ describe("components", () => {
       .contains("something else")
       .click()
       .get("#button-clicked-div")
-      .contains("Button Clicked");
+      .should('have.value', '{"counter":1}');
   });
 });
