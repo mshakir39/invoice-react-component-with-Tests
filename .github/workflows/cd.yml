@@ -1,0 +1,41 @@
+name: CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  main:
+    name: Lint, test, build CD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache: "npm"
+      - uses: nrwl/nx-set-shas@v2
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+
+      - run: npx nx workspace-lint
+      - run: npx nx run-many --target=lint --all
+      - run: npx nx run-many --target=test --all
+
+      - uses: cypress-io/github-action@v4.2.0
+        with:
+          runTests: false
+      - run: npx nx run-many --target=e2e --all

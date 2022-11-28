@@ -8,7 +8,11 @@
     "api": "./node_modules/.bin/json-server --watch ./data/api_db.json"
   },
   "private": true,
+  "optionalDependencies": {
+    "esbuild-android-arm64": "^0.15.12"
+  },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/material": "^5.10.12",
     "@mui/x-date-pickers": "^5.0.6",
@@ -22,6 +26,8 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/eslint-parser": "^7.19.1",
     "@nrwl/cli": "15.0.1",
     "@nrwl/cypress": "14.6.1",
     "@nrwl/eslint-plugin-nx": "14.7.13",
@@ -61,6 +67,7 @@
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
+    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "7.31.10",
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-storybook": "^0.6.4",

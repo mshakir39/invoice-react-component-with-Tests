@@ -22,6 +22,7 @@
     "target": "es2016",
     "types": ["node", "jest", "cypress"],
     "paths": {
+      "@code/shared/transporter": ["libs/shared/transporter/src/index.ts"],
       "@upwork/dashboard-components": ["libs/dashboard/components/src/index.ts"]
     }
   },
