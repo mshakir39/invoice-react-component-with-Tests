@@ -1,8 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import AcceptButton from "./accept-button";
 import React from "react";
-import { Simulate } from "react-dom/test-utils";
-import click = Simulate.click;
 
 export default {
   component: AcceptButton,

@@ -1,8 +1,6 @@
 import { APIRoutes, CupolaTransporter } from "./types";
 import { AxiosInstance, AxiosResponse } from "axios";
 
-import qs from "qs";
-
 export class JuneAPITransport implements CupolaTransporter {
   host: string;
   constructor(
