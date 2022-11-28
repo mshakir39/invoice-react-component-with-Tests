@@ -26,6 +26,8 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/eslint-parser": "^7.19.1",
     "@nrwl/cli": "15.0.1",
     "@nrwl/cypress": "14.6.1",
     "@nrwl/eslint-plugin-nx": "14.7.13",
