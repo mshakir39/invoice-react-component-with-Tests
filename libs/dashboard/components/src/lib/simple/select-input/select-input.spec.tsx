@@ -1,5 +1,7 @@
 import { render } from "@testing-library/react";
 import SelectInput from "./select-input";
+import {initTransport} from "@code/shared/transporter";
+import {AxiosResponse} from "axios";
 
 const AutocompleteSelector = "div.MuiAutocomplete-root";
 const TextFieldSelector = "div.MuiTextField-root";
@@ -24,7 +26,18 @@ describe("SelectInput", () => {
 
     const outerAutocomplete = getOuterAutocompleteOrFail(baseElement);
     const actualDataTestId = outerAutocomplete?.getAttribute("data-testid");
-
+    const transport = initTransport()
+    transport.june.loadChoices = () => {
+      return new Promise<AxiosResponse>((resolve, reject) =>
+          resolve({
+            data: ["list of values"],
+            status: 200,
+            statusText: "OK",
+            headers: {},
+            config: {},
+          })
+      )
+    }
     expect(actualDataTestId).toEqual(expectedDataTestId);
   });
 
