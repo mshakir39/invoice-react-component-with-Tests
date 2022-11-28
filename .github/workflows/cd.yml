@@ -33,9 +33,9 @@ jobs:
 
       - run: npx nx workspace-lint
       - run: npx nx run-many --target=lint --all
-      - run: npx nx test dashboard-components
+      - run: npx nx run-many --target=test --all
 
       - uses: cypress-io/github-action@v4.2.0
         with:
           runTests: false
-      - run: npx nx e2e components-e2e
+      - run: npx nx run-many --target=e2e --all

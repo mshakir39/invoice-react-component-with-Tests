@@ -1,4 +1,4 @@
 npx nx workspace-lint --all
 nx run-many --target=lint --all
-nx test dashboard-components
-nx e2e components-e2e
+npx nx run-many --target=test --all
+npx nx run-many --target=e2e --all
