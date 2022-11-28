@@ -32,6 +32,6 @@ jobs:
         run: npm ci --ignore-scripts
 
       - run: npx nx workspace-lint
-      - run: nx run-many --target=lint --all
-      - run: nx test dashboard-components
-      - run: nx e2e components-e2e
+      - run: npx nx run-many --target=lint --all
+      - run: npx nx test dashboard-components
+      - run: npx nx e2e components-e2e
