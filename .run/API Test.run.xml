@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="API Test" type="NodeJSConfigurationType" node-parameters="./node_modules/@nrwl/cli/bin/nx run api-cqrs:test" working-dir="$PROJECT_DIR$">
+    <method v="2" />
+  </configuration>
+</component>

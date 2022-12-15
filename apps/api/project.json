@@ -1,0 +1,100 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [
+        "^build",
+        {
+          "projects": "self",
+          "target": "createAppYaml",
+          "params": "forward"
+        }
+      ],
+      "options": {
+        "outputPath": "dist/apps/api",
+        "main": "apps/api/src/main.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "assets": ["apps/api/src/assets", "apps/api/src/app.yaml"],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/api/src/environments/environment.ts",
+              "with": "apps/api/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "createAppYaml": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "node apps/api/infrastructure/generate_app_yaml.js {args.project-id}"
+        ],
+        "color": true,
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "api:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "api:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api"],
+      "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "passWithNoTests": true,
+        "codeCoverage": true
+      }
+    },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "chmod +x apps/api/infrastructure/deploy.sh",
+          "apps/api/infrastructure/deploy.sh"
+        ],
+        "color": true,
+        "parallel": false
+      }
+    },
+    "setup": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "chmod +x apps/api/infrastructure/setup.sh",
+          "apps/api/infrastructure/setup.sh"
+        ],
+        "color": true,
+        "parallel": false
+      }
+    }
+  },
+  "tags": []
+}

@@ -2,14 +2,25 @@
 export default {
   displayName: "shared-transporter",
   preset: "../../../jest.preset.js",
-  globals: {
-    "ts-jest": {
-      tsconfig: "<rootDir>/tsconfig.spec.json",
-    },
-  },
   transform: {
-    "^.+\\.[tj]s$": "ts-jest",
+    "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nrwl/react/plugins/jest",
+    "^.+\\.[tj]sx?$": [
+      "ts-jest",
+      {
+        tsconfig: "<rootDir>/tsconfig.spec.json",
+        isolatedModules: true,
+      },
+    ],
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../../coverage/libs/shared/transporter",
+  coverageReporters: ["lcov", "text-summary"],
+  coverageThreshold: {
+    global: {
+      statements: 85,
+      branches: 85,
+      functions: 85,
+      lines: 85,
+    },
+  },
 };

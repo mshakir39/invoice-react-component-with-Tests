@@ -1,0 +1,67 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: combined.Dockerfile
+    container_name: app
+    restart: unless-stopped
+    environment:
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_HOST: "${DB_HOST:-postgresql}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+      DB_USERNAME: "${DB_USERNAME:-postgres}"
+      DB_DATABASE: "${DB_DATABASE:-cupola}"
+      HS256_SECRET: "${HS256_SECRET:-PreSharedSecret}"
+      SWAGGER_SECRET: "${SWAGGER_SECRET:-exampleme}"
+      NEXT_PUBLIC_API: https://cupolasoftware.dev
+      NEXT_PUBLIC_RUN_MODE: dev
+      NEXT_TELEMETRY_DISABLED: 1 # https://nextjs.org/telemetry#how-do-i-opt-out
+      ENVIRONMENT: local
+      SALT: "${PM2_WEB_SALT:-example}"
+      MONGODB_URI: "mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-example}@mongo:27017"
+    entrypoint: ["/app/entrypoint.sh"]
+    ports:
+      - "80:80"
+      - "443:443"
+      - "${CUPOLA_API_PORT:-3333}:3333"
+      - "${CUPOLA_DASHBOARD_PORT:-4200}:4200"
+      - "${CUPOLA_STORYBOOK_PORT:-4400}:4400"
+      - "${CUPOLA_MONITORING_PORT:-4600}:4600"
+    volumes:
+      - ./:/app
+      - ./devenv/nginx/cupola.conf:/etc/nginx/conf.d/cupola.conf
+      - ./devenv/ssl:/etc/nginx/ssl
+    depends_on:
+      - postgresql
+
+  postgresql:
+    container_name: postgresql
+    image: postgres
+    restart: unless-stopped
+    environment:
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_HOST: "${DB_HOST:-postgresql}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+      DB_USERNAME: "${DB_USERNAME:-postgres}"
+      DB_DATABASE: "${DB_DATABASE:-cupola}"
+      POSTGRES_DB: "${DB_DATABASE:-cupola}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./devenv/psql:/docker-entrypoint-initdb.d
+      - ./data/postgresql:/var/lib/postgresql/data
+
+  mongodb:
+    container_name: mongo
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGO_USERNAME:-admin}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_PASSWORD:-example}"
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/var/lib/postgresql/data

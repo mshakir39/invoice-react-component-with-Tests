@@ -1,15 +1,21 @@
 import { AxiosInstance, AxiosResponse } from "axios";
+import {
+  ACreateTeamMemberDto,
+} from "@cupola/types";
+
 export interface Transporter {
-  june: CupolaTransporter;
+  cupola: CupolaTransporter;
 }
 
 export interface CupolaTransporter {
   http: AxiosInstance;
   host: string;
   apiRoutes: APIRoutes;
-  loadChoices: () => Promise<AxiosResponse>;
+  teamMember: {
+    create: (body: ACreateTeamMemberDto) => Promise<AxiosResponse>;
+  };
 }
 
 export interface APIRoutes {
-  logout: string;
+  teamMember: { create: string };
 }

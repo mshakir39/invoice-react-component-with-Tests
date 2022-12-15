@@ -1,0 +1,102 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    restart: unless-stopped
+    environment:
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_HOST: "${DB_HOST:-postgresql}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+      DB_USERNAME: "${DB_USERNAME:-postgres}"
+      DB_DATABASE: "${DB_DATABASE:-cupola}"
+      HS256_SECRET: "${HS256_SECRET:-PreSharedSecret}"
+      SWAGGER_SECRET: "${SWAGGER_SECRET:-exampleme}"
+      ENVIRONMENT: local
+    command: npx nx serve api
+    ports:
+      - "3333:3333"
+    volumes:
+      - ./:/app
+    depends_on:
+      - migrations
+
+  migrations:
+    build:
+      context: .
+      dockerfile: apps/migrations/Dockerfile
+    container_name: api-migrations
+    restart: on-failure
+    depends_on:
+      - postgresql
+    environment:
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_HOST: "${DB_HOST:-postgresql}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+      DB_USERNAME: "${DB_USERNAME:-postgres}"
+      DB_DATABASE: "${DB_DATABASE:-cupola}"
+    command:
+      - "npm"
+      - "run"
+      - "api:migration:up"
+    volumes:
+      - "./apps/migrations/src/migrations:/apps/migrations"
+
+  postgresql:
+    container_name: postgresql
+    image: postgres
+    restart: unless-stopped
+    environment:
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_HOST: "${DB_HOST:-postgresql}"
+      DB_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+      DB_USERNAME: "${DB_USERNAME:-postgres}"
+      DB_DATABASE: "${DB_DATABASE:-cupola}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-example}"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./devenv/psql:/docker-entrypoint-initdb.d
+      - ./data/postgresql:/var/lib/postgresql/data
+
+  dashboard:
+    container_name: dashboard
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_API: http://localhost:3333
+      NEXT_PUBLIC_RUN_MODE: dev
+      ENVIRONMENT: local
+    command: ["npx", "nx", "serve", "dashboard"]
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./:/app
+
+  storybook:
+    container_name: storybook
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["npx", "nx", "storybook", "dashboard-components"]
+    ports:
+      - "4400:4400"
+    volumes:
+      - ./:/app
+
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./devenv/nginx/cupola.conf:/etc/nginx/conf.d/cupola.conf
+      - ./devenv/ssl:/etc/nginx/ssl

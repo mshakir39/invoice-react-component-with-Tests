@@ -1,0 +1,10 @@
+{
+  "Project1": [
+    "TotalHours",
+    "Overhead",
+    "Pre Design",
+    "Schematic Design",
+    "Add a Phase"
+  ],
+  "Project2": ["TotalHours", "Overhead", "Pre Design", "Schematic Design"]
+}

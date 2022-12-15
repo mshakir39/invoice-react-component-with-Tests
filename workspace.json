@@ -2,9 +2,12 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "api": "apps/api",
     "components-e2e": "apps/components-e2e",
-    "dashboard": "apps/dashboard",
     "dashboard-components": "libs/dashboard/components",
-    "shared-transporter": "libs/shared/transporter"
+    "shared-cy-commands": "libs/shared/cy-commands",
+    "shared-transporter": "libs/shared/transporter",
+    "signed-cookie": "apps/signed-cookie",
+    "types": "libs/shared/types"
   }
 }

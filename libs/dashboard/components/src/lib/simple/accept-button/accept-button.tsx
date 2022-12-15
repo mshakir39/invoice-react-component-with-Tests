@@ -15,6 +15,9 @@ interface ButtonProps {
     | "warning"
   >;
   onClick?: () => void;
+  variant?: "text" | "contained" | "outlined";
+  fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 function AcceptButton({
@@ -22,15 +25,19 @@ function AcceptButton({
   text = "Default",
   color_ = "primary",
   onClick,
+  variant = "contained",
+  fullWidth = true,
+  disabled = false,
 }: ButtonProps) {
   return (
     <Button
       onClick={onClick}
       type={type}
       data-testid="accept-btn"
-      fullWidth={true}
+      fullWidth={fullWidth}
       color={color_}
-      variant={"contained"}
+      variant={variant}
+      disabled={disabled}
     >
       {text}
     </Button>

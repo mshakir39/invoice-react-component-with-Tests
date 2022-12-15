@@ -22,11 +22,21 @@ export interface StandardAutocompleteProps {
     reason: string,
     details?: AutocompleteChangeDetails<{ label: string } | string>
   ) => void;
+  disabled?: boolean;
+  // You can define option matching however you want.
+  isOptionEqualToValue?: <T>(option: T, value: T) => boolean;
 }
 
 export function SelectInput(props: StandardAutocompleteProps) {
   // Splitting props into ones for Autocomplete and TextField.
-  const { error, dataTestId, helperText, loading, ...outer } = props;
+  const {
+    error,
+    dataTestId,
+    helperText,
+    loading,
+    isOptionEqualToValue: equater,
+    ...outer
+  } = props;
 
   // Splitting TextField props into sx, with defaults, and all others.
   let { sx: textFieldSx } = outer;
@@ -36,6 +46,9 @@ export function SelectInput(props: StandardAutocompleteProps) {
   return (
     <Autocomplete
       {...outer}
+      isOptionEqualToValue={
+        equater || ((option, value) => value === "" || option === value)
+      }
       loading={loading ? loading : undefined}
       noOptionsText={
         <Typography

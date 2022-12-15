@@ -1,0 +1,29 @@
+{
+  "apps": [
+    {
+      "name": "api",
+      "script": "npx nx serve api",
+      "instances": 1,
+      "exec_mode": "fork"
+    },
+    {
+      "name": "dashboard",
+      "script": "npx nx serve dashboard",
+      "instances": 1,
+      "exec_mode": "fork"
+    },
+    {
+      "name": "storybook",
+      "script": "npx nx storybook dashboard-components",
+      "instances": 1,
+      "exec_mode": "fork"
+    },
+    {
+      "name": "monitor",
+      "cwd": "/usr/share/pm2-web-ui",
+      "script": "npm run dev",
+      "instances": 1,
+      "exec_mode": "fork"
+    }
+  ]
+}

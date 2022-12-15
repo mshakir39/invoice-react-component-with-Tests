@@ -16,27 +16,19 @@ Primary.args = {};
 export const Basic = () => {
   return (
     <div>
+      <div id={"button-clicked-div"} style={{ display: "none" }}>
+        Button Clicked
+      </div>
       <AcceptButton
-        // Some components would be better with ...
-        // onChange={() => { ... }}
         onClick={() => {
-          const elementById = document.getElementById("button-clicked-div") as HTMLFormElement;
-          let json = elementById.value
-          if (json === "") {
-            json = '{"counter": 0}'
+          const elementById = document.getElementById("button-clicked-div");
+          if (elementById) {
+            elementById.style.display = "inline";
           }
-          const clicked = JSON.parse(json);
-          clicked.counter = clicked.counter + 1
-          elementById.value = JSON.stringify(clicked)
         }}
         text={"something else"}
         type={"button"}
       />
-
-      <h3>Test harness output:</h3>
-      <pre>
-        <textarea id={"button-clicked-div"}></textarea>
-      </pre>
     </div>
   );
 };

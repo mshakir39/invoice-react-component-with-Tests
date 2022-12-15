@@ -1,0 +1,11 @@
+{
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run apps/signed-cookie/main.go"
+      }
+    }
+  }
+}

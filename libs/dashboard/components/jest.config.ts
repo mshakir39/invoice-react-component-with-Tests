@@ -15,7 +15,16 @@ export default {
       },
     ],
   },
-
+  setupFiles: ["jest-canvas-mock"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   coverageDirectory: "../../../coverage/libs/dashboard/components",
+  coverageReporters: ["lcov", "text-summary"],
+  coverageThreshold: {
+    global: {
+      statements: 70,
+      branches: 47,
+      functions: 48,
+      lines: 69,
+    },
+  },
 };

@@ -22,8 +22,17 @@
     "target": "es2016",
     "types": ["node", "jest", "cypress"],
     "paths": {
-      "@code/shared/transporter": ["libs/shared/transporter/src/index.ts"],
-      "@upwork/dashboard-components": ["libs/dashboard/components/src/index.ts"]
+      "@code/bqecore-sdk": ["libs/sdks/bqecore/src/index.ts"],
+      "@cupola/cupola-cli": ["cli/src/index.ts"],
+      "@cupola/dashboard-components": [
+        "libs/dashboard/components/src/index.ts"
+      ],
+      "@cupola/shared-filters": ["libs/shared/filters/src/index.ts"],
+      "@cupola/shared/cy-commands": ["libs/shared/cy-commands/src/index.ts"],
+      "@cupola/state-machine": ["libs/shared/state-machine/src/index.ts"],
+      "@cupola/transporter": ["libs/shared/transporter/src/index.ts"],
+      "@cupola/types": ["libs/shared/types/src/index.ts"],
+      "react-native-sqlite-storage": ["./dummy.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

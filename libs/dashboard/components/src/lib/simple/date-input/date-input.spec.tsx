@@ -7,7 +7,7 @@ describe("DateInput", () => {
   it("should render successfully", () => {
     const { baseElement } = render(
       <DateInput
-        value={""}
+        value={null}
         onChange={(newValue: Dayjs | null) => {
           console.log("Hello: ", newValue);
         }}
@@ -15,7 +15,6 @@ describe("DateInput", () => {
         dataTestId="test-instance"
       />
     );
-
     expect(baseElement).toBeTruthy();
   });
 });
