@@ -14,10 +14,6 @@ export * from "./lib/common/times";
 export * from "./lib/role/dto/a-create-role.dto";
 export * from "./lib/role/entities/role.entity";
 
-export * from "./lib/task/dto/a-filter-tasks.dto";
-export * from "./lib/task/dto/a-create-task.dto";
-export * from "./lib/task/dto/a-update-task-progress.dto";
-export * from "./lib/task/entities/task.entity";
 
 export * from "./lib/team-member/dto/a-create-team-member.dto";
 
