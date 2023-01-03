@@ -6,6 +6,10 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SettingsIcon from "@mui/icons-material/Settings";
 
+import { initTransport, Transporter } from "@cupola/transporter";
+import { useState } from "react";
+import { useGlobalAppContext } from "../context/context";
+
 export default function AccountSettings({
   title,
   children,
@@ -13,6 +17,11 @@ export default function AccountSettings({
   title: string;
   children: JSX.Element;
 }) {
+  const state = useGlobalAppContext();
+
+  const [apiTransport] = useState<Transporter>(
+    initTransport(() => state.apiHost || "")
+  );
   return (
     <Accordion sx={{ maxWidth: 1175 }}>
       <AccordionSummary
