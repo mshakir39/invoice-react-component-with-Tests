@@ -1,10 +1,7 @@
 /* eslint-disable */
 export default {
-  displayName: "components",
+  displayName: "test-fixtures",
   preset: "../../../jest.preset.js",
-  moduleNameMapper: {
-    "\\.(css|less).*$": "identity-obj-proxy",
-  },
   transform: {
     "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nrwl/react/plugins/jest",
     "^.+\\.[tj]sx?$": [
@@ -15,16 +12,15 @@ export default {
       },
     ],
   },
-  setupFiles: ["jest-canvas-mock"],
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
-  coverageDirectory: "../../../coverage/libs/dashboard/components",
+  moduleFileExtensions: ["ts", "js", "html"],
+  coverageDirectory: "../../../coverage/libs/shared/test-fixtures",
   coverageReporters: ["lcov", "text-summary"],
   coverageThreshold: {
     global: {
-      statements: 73,
-      branches: 49,
-      functions: 56,
-      lines: 72,
+      statements: 85,
+      branches: 85,
+      functions: 85,
+      lines: 85,
     },
   },
 };

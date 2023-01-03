@@ -16,14 +16,12 @@ export function fakeAddress(): Address {
   };
 }
 
-export function fakeStartDate(): DateTime {
+export function fakeStartDateTime(): DateTime {
   return DateTime.fromISO(faker.date.future(0, new Date()).toISOString());
 }
 
-export function fakeEndDate(refDate: DateTime): DateTime {
-  return DateTime.fromISO(
-    faker.date.future(0, refDate.toJSDate()).toISOString()
-  );
+export function fakeEndDate(refDate: Date): Date {
+  return new Date(faker.date.future(0, refDate.getDate()).toISOString());
 }
 
 export function fakeFullName(): string {

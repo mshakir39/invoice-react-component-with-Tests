@@ -5,6 +5,7 @@ describe("Account Settings", () => {
       `${Cypress.env("STORYBOOK_PATH")}&id=complex-account-settings--primary`
     );
   });
+
   it("should display Panel Header", () => {
     cy.get('[data-testid="SettingsIcon"]').should("be.visible");
     cy.get(".MuiTypography-root")
@@ -12,12 +13,13 @@ describe("Account Settings", () => {
       .and("contain", "Account Settings");
     cy.get('[data-testid="ExpandMoreIcon"]').should("be.visible");
   });
-  it("should submit Email Adress Update", () => {
+
+  it("should submit Email Address Update", () => {
     cy.get('[data-testid="ExpandMoreIcon"]').click();
-    cy.get("#email-adress").clear().type("cyptesstest@gmail.com");
+    cy.get("#email-address").clear().type("cyptesstest@gmail.com");
     // submit form
     cy.get('[type="submit"]').click();
-    // check data after submited
+    // check data after submitted
     cy.on("window:alert", (str) => {
       expect(str).to.equal(
         '{"email":"cyptesstest@gmail.com","currPw":"","newPw":"","newPwConfirm":""}'
@@ -31,6 +33,7 @@ describe("Account Settings", () => {
         );
       });
   });
+
   it("should submit User Form Update", () => {
     cy.get('[data-testid="ExpandMoreIcon"]').click();
     // type User Update form
@@ -39,7 +42,7 @@ describe("Account Settings", () => {
     cy.get("#confirm-new-password").type("01234567");
     // submit form
     cy.get('[type="submit"]').click();
-    // check data after submited
+    // check data after submitted
     cy.on("window:alert", (str) => {
       expect(str).to.equal(
         '{"email":"abc@gmail.com","currPw":"12345678","newPw":"01234567","newPwConfirm":"01234567"}'

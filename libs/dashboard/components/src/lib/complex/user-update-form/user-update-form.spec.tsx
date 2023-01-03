@@ -26,16 +26,16 @@ describe("User Update Form", () => {
       <UserUpdateForm onSubmitForm={onSubmitMock} userUpdate={{ email: "" }} />
     );
     expect(
-      baseElement.querySelector("#email-adress-helper-text")?.textContent
+      baseElement.querySelector("#email-address-helper-text")?.textContent
     ).toBe("Email is Required");
     // check invalid email
-    const emailInput = baseElement.querySelector("#email-adress");
+    const emailInput = baseElement.querySelector("#email-address");
     emailInput &&
       fireEvent.change(emailInput, {
         target: { value: "abc" },
       });
     expect(
-      baseElement.querySelector("#email-adress-helper-text")?.textContent
+      baseElement.querySelector("#email-address-helper-text")?.textContent
     ).toBe("Invalid Email Address");
   });
   it("Should any of the password fields are filled in, the other two must be filled in too", () => {

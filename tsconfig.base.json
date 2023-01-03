@@ -30,6 +30,7 @@
       "@cupola/shared-filters": ["libs/shared/filters/src/index.ts"],
       "@cupola/shared/cy-commands": ["libs/shared/cy-commands/src/index.ts"],
       "@cupola/state-machine": ["libs/shared/state-machine/src/index.ts"],
+      "@cupola/test-fixtures": ["libs/shared/test-fixtures/src/index.ts"],
       "@cupola/transporter": ["libs/shared/transporter/src/index.ts"],
       "@cupola/types": ["libs/shared/types/src/index.ts"],
       "react-native-sqlite-storage": ["./dummy.ts"]

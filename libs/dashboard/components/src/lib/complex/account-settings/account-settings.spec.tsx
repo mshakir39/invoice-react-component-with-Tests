@@ -27,7 +27,7 @@ describe("Account Settings", () => {
         userUpdate={userUpdateOnLoadForm}
       />
     );
-    const emailInput = baseElement.querySelector("#email-adress");
+    const emailInput = baseElement.querySelector("#email-address");
     const saveButton = screen.getByTestId("save-btn");
     // type email
     emailInput &&
@@ -57,7 +57,7 @@ describe("Account Settings", () => {
     );
 
     const saveButton = screen.getByTestId("save-btn");
-    const emailInput = baseElement.querySelector("#email-adress");
+    const emailInput = baseElement.querySelector("#email-address");
     const crrPwInput = baseElement.querySelector("#current-password ");
     const newPwInput = baseElement.querySelector("#new-password");
     const newPwConfirmInput = baseElement.querySelector(

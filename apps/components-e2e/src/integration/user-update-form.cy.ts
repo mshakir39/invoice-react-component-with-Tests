@@ -5,11 +5,11 @@ describe("User Update Form", () => {
     );
   });
   it("should display Email Address validation", () => {
-    cy.get("#email-adress").clear();
-    cy.get("#email-adress-helper-text").should("contain", "Email is Required");
+    cy.get("#email-address").clear();
+    cy.get("#email-address-helper-text").should("contain", "Email is Required");
 
-    cy.get("#email-adress").clear().type("abc");
-    cy.get("#email-adress-helper-text").should(
+    cy.get("#email-address").clear().type("abc");
+    cy.get("#email-address-helper-text").should(
       "contain",
       "Invalid Email Address"
     );
