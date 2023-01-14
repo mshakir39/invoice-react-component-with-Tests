@@ -1,6 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { TabbedDisplay } from "./tabbed-display";
-import { TabPanel } from "../../simple/tab-panel/tab-panel";
+import { TabPanel } from "./tab-panel";
 
 export default {
   component: TabbedDisplay,

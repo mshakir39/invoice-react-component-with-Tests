@@ -9,6 +9,7 @@ export interface TabbedDisplayProps {
   selected?: number;
   tabLabels: string[];
   children: React.ReactNode;
+  tabColorSelected?: string
 }
 
 // To share varying state with TabPanel children.
@@ -18,6 +19,7 @@ export const TabbedDisplay: React.FC<TabbedDisplayProps> = ({
   panelParent = "unparented",
   selected = 0,
   tabLabels,
+  tabColorSelected,
   children,
 }) => {
   const tabSx = {
@@ -41,6 +43,9 @@ export const TabbedDisplay: React.FC<TabbedDisplayProps> = ({
       sx={(theme) => ({
         ...tabSx,
         backgroundColor: theme.palette.background.paper,
+        "&.Mui-selected": {
+          color: tabColorSelected ,
+        },
       })}
     />
   )) as React.ReactNode;
@@ -52,6 +57,9 @@ export const TabbedDisplay: React.FC<TabbedDisplayProps> = ({
         value={selectedTab}
         onChange={handleChange}
         aria-label={`${panelParent}-tabbed-display`}
+        TabIndicatorProps={{
+          style: { display: "none" },
+        }}
       >
         {tabs}
       </Tabs>
