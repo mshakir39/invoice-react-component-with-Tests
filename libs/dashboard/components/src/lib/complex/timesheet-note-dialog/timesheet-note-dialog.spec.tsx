@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { TimesheetNoteDialog } from "./timesheet-note-dialog";
-import { initMockTransport } from "@cupola/transporter";
+import {
+  initMockTransport,
+} from "@cupola/transporter";
 import { DateTime } from "luxon";
 
 describe("Timesheet note dialog", () => {
@@ -80,7 +82,7 @@ describe("Timesheet note dialog", () => {
 
     await waitFor(() => {
       fireEvent.click(screen.getByText("SAVE"));
-      expect(timesheetsMock).toBeCalled();
+      expect(transporter.cupola.timesheet.updateNotes).toBeCalledTimes(1);
       expect(timesheetsMock).toBeCalledWith(
         expect.objectContaining({
           date: "2023-01-01",
