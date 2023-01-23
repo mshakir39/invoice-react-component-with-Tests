@@ -1,16 +1,42 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { TimesheetNoteDialog } from "./timesheet-note-dialog";
-import {
-  initMockTransport,
-} from "@cupola/transporter";
 import { DateTime } from "luxon";
+import { AxiosResponse } from "axios";
 
+import { INotes } from "@cupola/transporter";
+// mock module
+jest.mock("@cupola/transporter", () => {
+  return {
+    initTransport: () => ({
+      cupola: {
+        timesheet: {
+          updateNotes: (body: INotes) => {
+            console.log("update notes mock");
+            return new Promise<AxiosResponse>((resolve) =>
+              resolve({
+                data: {
+                  ...body,
+                  date: DateTime.fromISO(
+                    new Date(body.date.toString()).toISOString()
+                  ).toFormat("yyyy-MM-dd"),
+                },
+                status: 201,
+                statusText: "OK",
+                headers: {
+                  ContentLocation: `/timesheet-notes-mock`,
+                },
+                config: {},
+              })
+            );
+          },
+        },
+      },
+    }),
+  };
+});
 describe("Timesheet note dialog", () => {
-  const transporter = initMockTransport();
-  const timesheetsMock = jest.fn();
-
+  const submitNotesMock = jest.fn();
   beforeEach(() => {
-    transporter.cupola.timesheet.updateNotes = timesheetsMock;
     jest.clearAllMocks();
   });
 
@@ -34,11 +60,10 @@ describe("Timesheet note dialog", () => {
         startDate={DateTime.fromFormat("2022-12-19", "yyyy-MM-dd")}
         title="Add a Note"
         isOpen={true}
-        onSubmitForm={(note) => timesheetsMock(note)}
+        onSubmitForm={(note) => submitNotesMock(note)}
         onClose={() => console.log(false)}
       />
     );
-
     const date = baseElement.querySelector(
       '[data-testid="date-notes-text-field"] input'
     );
@@ -82,8 +107,8 @@ describe("Timesheet note dialog", () => {
 
     await waitFor(() => {
       fireEvent.click(screen.getByText("SAVE"));
-      expect(transporter.cupola.timesheet.updateNotes).toBeCalledTimes(1);
-      expect(timesheetsMock).toBeCalledWith(
+      expect(submitNotesMock).toBeCalledTimes(1);
+      expect(submitNotesMock).toBeCalledWith(
         expect.objectContaining({
           date: "2023-01-01",
           notes: "note test",
