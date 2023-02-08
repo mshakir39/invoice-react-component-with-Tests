@@ -81,9 +81,9 @@ Primary.args = {
   tableData: [
     {
       id: "0",
-      employeeName: "Matt",
+      employeeName: "Muzamil",
       role: "Manager",
-      email: "Matt@example.com",
+      email: "mshakir39@gmail.com",
       phoneNumber: "1212-122-1212",
       weeklyTargetBillingHours: "12",
       vacationDayAllowance: "21",
@@ -93,9 +93,9 @@ Primary.args = {
     },
     {
       id: "1",
-      employeeName: "Mark",
+      employeeName: "Muzasasamil",
       role: "Manager",
-      email: "Mark@example.com",
+      email: "mshakir39@gmail.com",
       phoneNumber: "1212-122-1212",
       weeklyTargetBillingHours: "12",
       vacationDayAllowance: "21",

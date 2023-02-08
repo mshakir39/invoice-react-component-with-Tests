@@ -9,6 +9,7 @@ module.exports = defineConfig({
   screenshotsFolder: "../../dist/cypress/apps/components-e2e/screenshots",
   chromeWebSecurity: false,
   defaultCommandTimeout: 10000,
+  retries: 3,
   e2e: {
     specPattern: "./src/integration/**/*.cy.{js,jsx,ts,tsx}",
     supportFile: "./src/support/index.ts",

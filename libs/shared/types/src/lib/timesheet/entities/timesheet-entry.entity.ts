@@ -7,7 +7,7 @@ import { ProjectEntity } from "../../project/entities/project.entity";
 @Unique(["date", "phase", "project"])
 export class TimesheetEntryEntity extends EntityMeta {
   @Column("date", { nullable: false })
-  date!: Date;
+  date: Date;
 
   @Column("int", { default: 0 })
   hours!: number;
@@ -21,9 +21,6 @@ export class TimesheetEntryEntity extends EntityMeta {
   @Column("text", { nullable: false })
   phase!: ProjectAndTaskPhase;
 
-  @ManyToOne(
-    "ProjectEntity",
-    (project: ProjectEntity) => project.timesheetEntries
-  )
-  project!: ProjectEntity;
+  @Column("text", { default: "" })
+  projectId!: string;
 }

@@ -7,12 +7,12 @@ import { GridColDef } from "@mui/x-data-grid";
 const dummyData = [
   {
     id: "0",
-    employeeName: "Matt",
+    employeeName: "Muzamil",
     role: "Manager",
   },
   {
     id: "1",
-    employeeName: "Mark",
+    employeeName: "Muzasasamil",
     role: "Manager",
   },
 ];

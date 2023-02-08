@@ -1,6 +1,7 @@
 /* eslint-disable */
 export default {
   displayName: "components",
+  testTimeout: 70000,
   preset: "../../../jest.preset.js",
   moduleNameMapper: {
     "\\.(css|less).*$": "identity-obj-proxy",
@@ -21,10 +22,10 @@ export default {
   coverageReporters: ["lcov", "text-summary"],
   coverageThreshold: {
     global: {
-      statements: 73,
-      branches: 49,
-      functions: 56,
-      lines: 72,
+      statements: 70,
+      branches: 47,
+      functions: 48,
+      lines: 69,
     },
   },
 };

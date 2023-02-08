@@ -1,5 +1,5 @@
-import { Transporter } from "./types";
-import { CupolaAPITransport } from "./cupola.transport";
+import { Transporter } from "./cupola-transporter";
+import { CupolaAPITransport } from "./cupola-api-transport";
 import { HttpInstance } from "./http";
 import { apiRoutes } from "./routes";
 import { AxiosInstance, AxiosRequestConfig } from "axios";

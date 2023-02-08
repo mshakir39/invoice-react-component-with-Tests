@@ -7,14 +7,7 @@ npm install
 npm install -g @nrwl/cli
 ```
 
-
-## The main example component in this repo "Account Settings"
-
-[libs/dashboard/components/src/lib/complex/account-settings/](libs/dashboard/components/src/lib/complex/account-settings/) is the component's source directory
-
-* `account-settings.tsx` - the component itself
-* `account-settings.spec.tsx` - the Jest tests for the component
-* `aaccount-settings.stories.tsx` - the Storybook presentation of the component (see this standalone for yourself but know that Cypress tests use this too)
+## The main example component in this repo "Timesheets"
 
 ## Running the Jest tests for the three existing components
 

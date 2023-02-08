@@ -11,7 +11,7 @@ describe("Timesheet note dialog", () => {
   it("should display Note dialog", () => {
     cy.get(".MuiBox-root button").click();
     cy.get(".MuiDialog-container").should("be.visible");
-    cy.get('h2').contains("Add a Note");
+    cy.get("h2").contains("Add a Note");
   });
   it("should close dialog when clicking 'CANCEL' button", () => {
     cy.get(".MuiBox-root button").click();
@@ -23,14 +23,15 @@ describe("Timesheet note dialog", () => {
   it("should submit dialog form when clicking 'SAVE' button", () => {
     cy.get(".MuiBox-root button").click();
 
-    cy.get('[data-testid="date-notes-text-field"] input').clear().type(
-      "01/01/2023"
-    ).type('{enter}');
-
-    cy.get('[data-testid="select-project"] input').type("Project1")
+    cy.get('[data-testid="date-notes-text-field"]').click();
+    cy.get('[data-testid="PenIcon"]').click();
+    cy.get(".MuiCalendarOrClockPicker-root input").clear().type("01/01/2023");
+    cy.get("button").contains("OK").click();
+    
+    cy.get('[data-testid="select-project"] input').type("Project1");
     cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
 
-    cy.get('[data-testid="select-phase"]').type("Overhead")
+    cy.get('[data-testid="select-phase"]').type("Overhead");
     cy.get('.MuiAutocomplete-popper li[data-option-index="0"]').click();
 
     cy.get('[data-testid="note-input"] input').type("notes test");

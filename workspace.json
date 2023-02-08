@@ -8,7 +8,6 @@
     "shared-cy-commands": "libs/shared/cy-commands",
     "shared-transporter": "libs/shared/transporter",
     "signed-cookie": "apps/signed-cookie",
-    "test-fixtures": "libs/shared/test-fixtures",
     "types": "libs/shared/types"
   }
 }

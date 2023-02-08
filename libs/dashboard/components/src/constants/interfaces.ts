@@ -51,14 +51,14 @@ export interface ITimesheetHoursWorkedProp {
 }
 
 export interface ITimesheetNoteForm {
-  date: DateTime;
+  date: string;
   project: string;
   phase: string;
   notes: string;
 }
 
 export interface ITimsheetNoteDialog {
-  startDate: DateTime;
+  startDate: string;
   title: string;
   isOpen: boolean;
   onSubmitForm: (timeEntry: ITimesheetNoteForm) => void;
