@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 declare module "react" {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
     nexttab?: string;
@@ -11,6 +11,12 @@ export interface IUserUpdateForm {
   currPw: string | null;
   newPw: string | null;
   newPwConfirm: string | null;
+}
+export interface IButton {
+  label: string;
+  variant?: "text" | "contained" | "outlined";
+  color?: "inherit" | "default" | "primary" | "secondary" | undefined;
+  onClick?: () => void;
 }
 // timesheet page interfaces
 export interface ITaskWeek {
