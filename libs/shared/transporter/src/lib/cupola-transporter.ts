@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import {
+  InvoiceEntity,
   ProjectEntity,
   TimesheetEntryEntity,
 } from "@cupola/types";
@@ -9,7 +10,6 @@ export interface Transporter {
 }
 
 export interface CupolaTransporter {
-
   timesheet: {
     get: (
       startDate: Date,
@@ -24,7 +24,13 @@ export interface CupolaTransporter {
       phase: string
     ) => Promise<AxiosResponse<Partial<TimesheetEntryEntity>>>;
   };
+  invoice: {
+    get: () => Promise<AxiosResponse<InvoiceEntity>>;
+  };
+
   project: {
-    getAll: (filter?: Partial<ProjectEntity>) => Promise<AxiosResponse<ProjectEntity[]>>;
+    getAll: (
+      filter?: Partial<ProjectEntity>
+    ) => Promise<AxiosResponse<ProjectEntity[]>>;
   };
 }

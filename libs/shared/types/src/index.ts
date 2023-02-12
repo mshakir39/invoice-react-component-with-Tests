@@ -15,6 +15,8 @@ export * from "./lib/project/entities/project.entity";
 export * from "./lib/role/dto/a-create-role.dto";
 export * from "./lib/role/entities/role.entity";
 export * from "./lib/timesheet/entities/timesheet-entry.entity";
+export * from "./lib/invoice/invoice.entity";
+
 export * from "./lib/timesheet/entities/fake-timesheet-entity";
 
 export * from "./lib/team-member/dto/a-create-team-member.dto";

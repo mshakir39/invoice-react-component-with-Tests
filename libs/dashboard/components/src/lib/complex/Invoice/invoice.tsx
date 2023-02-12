@@ -1,6 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@mui/material/Box";
-
+import { forwardRef } from "react";
+// import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 const useStyles = makeStyles({
   flex: {
     display: "flex",
@@ -48,7 +49,8 @@ const useStyles = makeStyles({
     fontWeight: "normal",
   },
   container: {
-    height: "100vh",
+    height: "1128px",
+    width: "826px",
     paddingLeft: "10%",
     paddingRight: "10%",
   },
@@ -74,10 +76,26 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Invoice() {
+type Tprops = {
+  ref?: React.RefObject<HTMLElement>;
+  id?: string;
+  data: any;
+};
+const Invoice = forwardRef(({ ref, id, data }: Tprops) => {
   const classes = useStyles();
+  function getValueByPercentage(percent: any, originalValue: any) {
+    return (percent / 100) * originalValue;
+  }
+  let subTotal = 0;
+  data &&
+    data.invoiceData.forEach((item: any) => {
+      subTotal = item.qty * item.price + subTotal;
+    });
+
   return (
-    <Box className={classes.container}>
+    // <Document>
+    //   <Page size="A4">
+    <Box className={classes.container} ref={ref} id={id} sx={{ pt: 10 }}>
       <div className={classes.title}>INVOICE</div>
       <Box className={classes.info_Container} sx={{ pt: 5 }}>
         <div className={classes.info_Container_child}>
@@ -87,7 +105,7 @@ export default function Invoice() {
                 <span className={classes.bold}>Invoice num :</span>
               </div>
               <div style={{ width: "75%" }}>
-                <span>#98872</span>
+                <span>{data && data.invoiceNum}</span>
               </div>
             </Box>
             <Box className={classes.flex} sx={{ pt: 2 }}>
@@ -95,7 +113,7 @@ export default function Invoice() {
                 <span className={classes.bold}>Invoice Date :</span>
               </div>
               <div style={{ width: "75%" }}>
-                <span>12 jan 2132</span>
+                <span>{data && data.invoiceDate}</span>
               </div>
             </Box>
             <Box className={classes.flex} sx={{ pt: 5 }}>
@@ -103,7 +121,7 @@ export default function Invoice() {
                 <span className={classes.bold}>Terms :</span>
               </div>
               <div style={{ width: "75%" }}>
-                <span>This is just a Sample Terms</span>
+                <span>{data && data.terms}</span>
               </div>
             </Box>
             <Box className={classes.flex} sx={{ pt: 5 }}>
@@ -112,10 +130,16 @@ export default function Invoice() {
               </div>
               <div style={{ width: "75%" }}>
                 <span className={classes.from}>
-                  <span>No Name</span>
-                  <span>house # 2323,street xyz</span>
-                  <span>None,California,323423</span>
-                  <span>(555) 555-1234.</span>
+                  <span>{data && data.from["companyName"]}</span>
+                  <span>
+                    {data && data.from["companyName"]},
+                    {data && data.from["streetAddress"]}
+                  </span>
+                  <span>
+                    {data && data.from["city"]},{data && data.from["state"]},
+                    {data && data.from["zip"]}
+                  </span>
+                  <span>{data && data.from["number"]}</span>
                 </span>{" "}
               </div>
             </Box>
@@ -124,7 +148,7 @@ export default function Invoice() {
                 <span className={classes.bold}>Project :</span>
               </div>
               <div style={{ width: "75%" }}>
-                <span>Project Zero</span>
+                <span>{data && data.projectName}</span>
               </div>
             </Box>
           </div>
@@ -135,8 +159,9 @@ export default function Invoice() {
               <div style={{ width: "25%" }}>
                 <img
                   className={classes.bold}
+                  style={{ height: "100px" }}
                   alt=""
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbpnFeQNNZbq3lUcmTIQ6e7aBfGI9KuwDNUQ&usqp=CAU"
+                  src={data && data.invoiceLogo}
                 ></img>
               </div>
               <div style={{ width: "75%" }}></div>
@@ -147,10 +172,17 @@ export default function Invoice() {
               </div>
               <div style={{ width: "75%" }}>
                 <span className={classes.from}>
-                  <span>No Name</span>
-                  <span>house # 2323,street xyz</span>
-                  <span>None,California,323423</span>
-                  <span>(555) 555-1234.</span>
+                  <span>{data && data.invoiceFor["companyName"]}</span>
+                  <span>
+                    {data && data.invoiceFor["companyName"]},
+                    {data && data.invoiceFor["streetAddress"]}
+                  </span>
+                  <span>
+                    {data && data.invoiceFor["city"]},
+                    {data && data.invoiceFor["state"]},
+                    {data && data.invoiceFor["zip"]}
+                  </span>
+                  <span>{data && data.invoiceFor["number"]}</span>
                 </span>{" "}
               </div>
             </Box>
@@ -159,7 +191,7 @@ export default function Invoice() {
                 <span className={classes.bold}>Project :</span>
               </div>
               <div style={{ width: "75%" }}>
-                <span>Project Zero</span>
+                <span>{data && data.projectName}</span>
               </div>
             </Box>
           </div>
@@ -178,37 +210,43 @@ export default function Invoice() {
             <th className={classes.th}>Price</th>
             <th className={classes.th}>Amount</th>
           </tr>
-          <tr>
-            <td className={classes.description_td}>Item 1</td>
-            <td className={classes.td}>10</td>
-            <td className={classes.td}>$10</td>
-            <td className={classes.td}>$100</td>
-          </tr>
+          {data &&
+            data.invoiceData.map((Item: any, i: string) => (
+              <tr key={i}>
+                <td className={classes.description_td}>{Item.description}</td>
+                <td className={classes.td}>{Item.qty}</td>
+                <td className={classes.td}>${Item.price}</td>
+                <td className={classes.td}>${Item.price * Item.qty}</td>
+              </tr>
+            ))}
+
           <tr>
             <td></td>
             <td></td>
             <td className={classes.tdNoBorder}>Sub Total</td>
-            <td className={classes.td}> $22320</td>
+            <td className={classes.td}> ${subTotal}</td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td className={classes.tdNoBorder}>Tax Rate</td>
-            <td className={classes.td}> 10%</td>
+            <td className={classes.td}> {data && data.taxRate}%</td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td className={classes.tdNoBorder}>Tax</td>
-            <td className={classes.td}> $220</td>
+            <td className={classes.td}>
+              {" "}
+              ${getValueByPercentage(data && data.taxRate, subTotal)}
+            </td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td className={classes.amountTotal}>Amount Due</td>
             <td className={classes.td} style={{ fontWeight: "bold" }}>
-              {" "}
-              $2,2220
+              ${getValueByPercentage(data && data.taxRate, subTotal) + subTotal}
             </td>
           </tr>
         </table>
@@ -216,9 +254,13 @@ export default function Invoice() {
           <span className={classes.bold}>Notes</span>
           <br></br>
 
-          <span style={{ paddingTop: "8px" }}> Instructions will be here</span>
+          <span style={{ paddingTop: "8px" }}> {data && data.notes}</span>
         </Box>
       </Box>
     </Box>
+    //   </Page>
+    // </Document>
   );
-}
+});
+
+export default Invoice;

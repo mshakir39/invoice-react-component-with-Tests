@@ -11,7 +11,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MyButton({ label, variant, color, onClick }: IButton) {
+export default function MyButton({
+  label = "Click",
+  variant = "contained",
+  color = "primary",
+  onClick,
+}: IButton) {
   const classes = useStyles();
 
   return (

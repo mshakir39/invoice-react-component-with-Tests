@@ -1,7 +1,11 @@
 import { CupolaTransporter } from "./cupola-transporter";
 import { AxiosInstance, AxiosResponse } from "axios";
 
-import { ProjectEntity, TimesheetEntryEntity } from "@cupola/types";
+import {
+  ProjectEntity,
+  TimesheetEntryEntity,
+  InvoiceEntity,
+} from "@cupola/types";
 
 import { APIRoutes } from "./routes";
 
@@ -19,6 +23,33 @@ export class CupolaAPITransport implements CupolaTransporter {
     getAll: async (filter?: Partial<ProjectEntity>): Promise<AxiosResponse> => {
       return this.http.get(`${this.host}/${this.apiRoutes.projects.getAll}`, {
         params: filter,
+      });
+    },
+  };
+  invoice = {
+    get: (
+      invoiceNum: string,
+      invoiceDate: Date,
+      terms: string,
+      From: Record<string, string>,
+      invoiceFor: Record<string, string>,
+      projectName: string,
+      taxRate: number,
+      invoiceData: Array<Record<string, string>>,
+      notes: string
+    ): Promise<AxiosResponse<InvoiceEntity>> => {
+      return this.http.get(`${this.host}/${this.apiRoutes.invoice.get}`, {
+        params: {
+          invoiceNum: invoiceNum,
+          invoiceDate: invoiceDate,
+          terms: terms,
+          From: From,
+          invoiceFor: invoiceFor,
+          projectName: projectName,
+          taxRate: taxRate,
+          invoiceData: invoiceData,
+          notes: notes,
+        },
       });
     },
   };
