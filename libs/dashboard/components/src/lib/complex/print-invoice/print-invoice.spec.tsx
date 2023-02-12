@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
-
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { PrintInvoice } from "../print-invoice/print-invoice";
 jest.mock("@cupola/transporter", () => {
   return {
     initMockTransport: () => ({
@@ -46,10 +47,10 @@ jest.mock("@cupola/transporter", () => {
                 },
                 status: 200,
                 statusText: "OK",
-                headers: {
-                  ContentLocation: `/timesheet}`,
-                },
                 config: {},
+                headers: {
+                  ContentLocation: `/invoice}`,
+                },
               })
             );
           },
@@ -57,4 +58,35 @@ jest.mock("@cupola/transporter", () => {
       },
     }),
   };
+});
+
+describe("Invoice component", () => {
+  const getMock = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it("should render successfully", async () => {
+    const { container } = render(<PrintInvoice />);
+
+    expect(container).toBeTruthy();
+
+    act(() => {
+      const button = container.getElementsByTagName("button")[0] as HTMLElement;
+      expect(button).toBeTruthy();
+      fireEvent.click(button);
+    });
+
+    (async function () {
+      await waitFor(() => {
+        expect(getMock).toBeCalledTimes(1);
+      });
+    })();
+
+    const invoice = container.querySelector(
+      "#invoice-container"
+    ) as HTMLElement;
+
+    expect(invoice).toBeTruthy();
+  });
 });

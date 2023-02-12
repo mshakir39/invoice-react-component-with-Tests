@@ -1,26 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
-// import MyButton from "../../simple/Button/button";
+import { useEffect, useState } from "react";
 import Invoice from "../Invoice/invoice";
-// import ReactToPrint from "react-to-print";
-// import PrintProvider, { Print, NoPrint } from "react-easy-print";
-// import { PDFDownloadLink } from "@react-pdf/renderer";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import Button from "../../simple/Button/button";
 import { Transporter, initMockTransport } from "@cupola/transporter";
-export default function PrintInvoice() {
+
+export const PrintInvoice = () => {
   const [response, setResponse] = useState<any>();
   const [apiTransport] = useState<Transporter>(
     initMockTransport() // If you want to use real-backend, please comment on this line
-    // initTransport(() => state.apiHost || "") // TODO: use for real-backend (production)
   );
-  // const printRef = React.useRef();
 
   const handleDownloadPdf = async () => {
     try {
       await apiTransport.cupola.invoice.get().then(async (res) => {
         setResponse(res.data);
-        console.log("data", res.data);
       });
     } catch {
       console.log("err");
@@ -28,54 +22,41 @@ export default function PrintInvoice() {
   };
 
   const afterSet = async () => {
+    // Create a new instance of jsPDF for generating PDF output
     const pdf = new jsPDF("portrait", "pt", "a4");
+    // Use html2canva to convert HTML element to canvas
     const data = await html2canvas(
       document.querySelector("#pdf") as HTMLElement
     );
+    // Create an image object from canvas
     const img = data.toDataURL("image/png");
+    // Get the width and height of the image
     const imgProperties = pdf.getImageProperties(img);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-    console.log("pdfWidth", pdfWidth, pdfHeight);
+    // Add the image to the PDF document
     pdf.addImage(img, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("Invoice.pdf");
+    // Save the PDF Document
+    pdf.save(`${response.invoiceFor["companyName"]}-invoice.pdf`);
   };
+
   useEffect(() => {
     if (response) {
       afterSet();
     }
   }, [response]);
+
   return (
-    <div>
-      <Button onClick={handleDownloadPdf} label="Download"></Button>
+    <div data-testid="container">
+      <Button
+        onClick={handleDownloadPdf}
+        id="downloadButton"
+        label="Download"
+        data-testid="downloadButton"
+      ></Button>
       <Invoice id="pdf" data={response}></Invoice>
     </div>
-    // <PDFDownloadLink
-    //   document={<Invoice />}
-    //   fileName="movielist.pdf"
-    //   style={{
-    //     textDecoration: "none",
-    //     padding: "10px",
-    //     color: "#4a4a4a",
-    //     backgroundColor: "#f2f2f2",
-    //     border: "1px solid #4a4a4a",
-    //   }}
-    // />
-    // <PrintProvider>
-    //   <NoPrint>
-    //     <div>
-    //       <Print printOnly single name="foo">
-    //         <Invoice />
-    //       </Print>
-    //     </div>
-
-    //     <MyButton
-    //       onClick={() => window.print()}
-    //       label="Print"
-    //       variant="contained"
-    //       color="primary"
-    //     ></MyButton>
-    //   </NoPrint>
-    // </PrintProvider>
   );
-}
+};
+
+export default PrintInvoice;

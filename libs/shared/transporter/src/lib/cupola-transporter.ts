@@ -25,7 +25,17 @@ export interface CupolaTransporter {
     ) => Promise<AxiosResponse<Partial<TimesheetEntryEntity>>>;
   };
   invoice: {
-    get: () => Promise<AxiosResponse<InvoiceEntity>>;
+    get: (
+      invoiceNum?: string,
+      invoiceDate?: Date,
+      terms?: string,
+      from?: Record<string, string>,
+      invoiceFor?: Record<string, string>,
+      projectName?: string,
+      taxRate?: number,
+      invoiceData?: Array<Record<string, string>>,
+      notes?: string
+    ) => Promise<AxiosResponse<InvoiceEntity>>;
   };
 
   project: {

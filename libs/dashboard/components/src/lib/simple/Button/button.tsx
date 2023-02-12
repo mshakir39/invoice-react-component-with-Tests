@@ -16,6 +16,7 @@ export default function MyButton({
   variant = "contained",
   color = "primary",
   onClick,
+  id,
 }: IButton) {
   const classes = useStyles();
 
@@ -25,6 +26,7 @@ export default function MyButton({
       variant={variant}
       color={color}
       onClick={onClick}
+      id={id}
     >
       {label}
     </Button>

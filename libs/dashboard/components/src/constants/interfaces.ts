@@ -17,6 +17,7 @@ export interface IButton {
   variant?: "text" | "contained" | "outlined";
   color?: "inherit" | "default" | "primary" | "secondary" | undefined;
   onClick?: () => void;
+  id?: string;
 }
 // timesheet page interfaces
 export interface ITaskWeek {

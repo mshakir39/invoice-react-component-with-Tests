@@ -28,22 +28,22 @@ export class CupolaAPITransport implements CupolaTransporter {
   };
   invoice = {
     get: (
-      invoiceNum: string,
-      invoiceDate: Date,
-      terms: string,
-      From: Record<string, string>,
-      invoiceFor: Record<string, string>,
-      projectName: string,
-      taxRate: number,
-      invoiceData: Array<Record<string, string>>,
-      notes: string
+      invoiceNum?: string,
+      invoiceDate?: Date,
+      terms?: string,
+      from?: Record<string, string>,
+      invoiceFor?: Record<string, string>,
+      projectName?: string,
+      taxRate?: number,
+      invoiceData?: Array<Record<string, string>>,
+      notes?: string
     ): Promise<AxiosResponse<InvoiceEntity>> => {
       return this.http.get(`${this.host}/${this.apiRoutes.invoice.get}`, {
         params: {
           invoiceNum: invoiceNum,
           invoiceDate: invoiceDate,
           terms: terms,
-          From: From,
+          from: from,
           invoiceFor: invoiceFor,
           projectName: projectName,
           taxRate: taxRate,
