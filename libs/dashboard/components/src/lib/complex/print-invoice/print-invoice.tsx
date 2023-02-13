@@ -37,7 +37,9 @@ export const PrintInvoice = () => {
     // Add the image to the PDF document
     pdf.addImage(img, "PNG", 0, 0, pdfWidth, pdfHeight);
     // Save the PDF Document
-    pdf.save(`${response.invoiceFor["companyName"]}-invoice.pdf`);
+    const ID = response.invoiceNum.replace("#", "");
+    console.log("ID", ID);
+    pdf.save(`${response.invoiceFor["companyName"]}-invoice-${ID}.pdf`);
   };
 
   useEffect(() => {
