@@ -5,40 +5,7 @@ import { jsPDF } from "jspdf";
 import Button from "../../simple/Button/button";
 import { Transporter, initMockTransport } from "@cupola/transporter";
 
-const mockResponse = {
-  invoiceNum: "#672368",
-  invoiceDate: new Date().toLocaleDateString(),
-  invoiceLogo:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDyaCe1G98CHYY5xiUzIEVEbYHVZpByo_eKw&usqp=CAU",
-  terms: "no terms",
-  taxRate: 20,
-  invoiceData: [
-    {
-      description: "Shared Space",
-      qty: 10,
-      price: 20,
-    },
-  ],
-  from: {
-    companyName: "Capula Saofware",
-    streetAddress: "123 Main St",
-    city: "New York",
-    state: "NY",
-    zip: "10005",
-    number: "(555) 555-1234",
-  },
-  invoiceFor: {
-    companyName: "Vera Solutions",
-    streetAddress: "624 La Sierra St.",
-    city: "Tulare",
-    state: "CA ",
-    zip: "93274",
-    number: "(555) 555-1262",
-  },
-  projectName: "Cybertron",
-  notes: "not written",
-};
-export const PrintInvoice = () => {
+export const PrintInvoice = ({ data }: any) => {
   const [response, setResponse] = useState<any>();
   const [calls, setCalls] = useState<number>(0);
 
@@ -85,8 +52,8 @@ export const PrintInvoice = () => {
   }, [response]);
 
   useEffect(() => {
-    setResponse(mockResponse);
-  }, []);
+    if (data) setResponse(data);
+  }, [data]);
 
   return (
     <div data-testid="container">
