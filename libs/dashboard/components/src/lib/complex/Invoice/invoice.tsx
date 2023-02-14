@@ -271,11 +271,15 @@ const Invoice = ({ id, data }: Tprops) => {
                 <td></td>
                 <td className={classes.amountTotal}>Amount Due</td>
                 <td className={classes.td} style={{ fontWeight: "bold" }}>
-                  {getValueByPercentage(data && data.taxRate, subTotal) +
-                  subTotal
-                    ? "$" +
-                      getValueByPercentage(data && data.taxRate, subTotal) +
-                      subTotal
+                  {Number(
+                    getValueByPercentage(data && data.taxRate, subTotal)
+                  ) + Number(subTotal)
+                    ? `$ ${
+                        Number(
+                          getValueByPercentage(data && data.taxRate, subTotal)
+                        ) + Number(subTotal)
+                      }
+                     `
                     : ""}
                 </td>
               </tr>
