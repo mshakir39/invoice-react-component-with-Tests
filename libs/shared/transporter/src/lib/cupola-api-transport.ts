@@ -28,6 +28,7 @@ export class CupolaAPITransport implements CupolaTransporter {
   };
   invoice = {
     get: (
+      type?: string,
       invoiceNum?: string,
       invoiceDate?: Date,
       terms?: string,
@@ -40,6 +41,7 @@ export class CupolaAPITransport implements CupolaTransporter {
     ): Promise<AxiosResponse<InvoiceEntity>> => {
       return this.http.get(`${this.host}/${this.apiRoutes.invoice.get}`, {
         params: {
+          type: type,
           invoiceNum: invoiceNum,
           invoiceDate: invoiceDate,
           terms: terms,
@@ -50,6 +52,31 @@ export class CupolaAPITransport implements CupolaTransporter {
           invoiceData: invoiceData,
           notes: notes,
         },
+      });
+    },
+    post: (
+      type?: string,
+      invoiceNum?: string,
+      invoiceDate?: Date,
+      terms?: string,
+      from?: Record<string, string>,
+      invoiceFor?: Record<string, string>,
+      projectName?: string,
+      taxRate?: number,
+      invoiceData?: Array<Record<string, string>>,
+      notes?: string
+    ): Promise<AxiosResponse<Partial<InvoiceEntity>>> => {
+      return this.http.post(`${this.host}/${this.apiRoutes.invoice.post}`, {
+        type: type,
+        invoiceNum: invoiceNum,
+        invoiceDate: invoiceDate,
+        terms: terms,
+        from: from,
+        invoiceFor: invoiceFor,
+        projectName: projectName,
+        taxRate: taxRate,
+        invoiceData: invoiceData,
+        notes: notes,
       });
     },
   };

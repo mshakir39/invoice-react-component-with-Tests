@@ -1,6 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import PrintInvoice from "./print-invoice";
 const mockResponse = {
+  type: "custom",
   invoiceNum: "#672368",
   invoiceDate: new Date().toLocaleDateString(),
   invoiceLogo:

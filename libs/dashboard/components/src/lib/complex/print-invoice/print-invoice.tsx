@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Invoice from "../Invoice/invoice";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
-import Button from "../../simple/Button/button";
+import { Iinvoice } from "../../../constants/interfaces";
 import { Transporter, initMockTransport } from "@cupola/transporter";
 
-export const PrintInvoice = ({ data }: any) => {
+interface Iprops {
+  data?: Iinvoice;
+}
+
+export const PrintInvoice = ({ data }: Iprops) => {
+  const childRef = useRef<any>();
   const [response, setResponse] = useState<any>();
-  const [calls, setCalls] = useState<number>(0);
+  const [called, setCalled] = useState<boolean>(false);
 
   const [apiTransport] = useState<Transporter>(
     initMockTransport() // If you want to use real-backend, please comment on this line
@@ -15,41 +18,31 @@ export const PrintInvoice = ({ data }: any) => {
 
   const handleDownloadPdf = async () => {
     try {
-      await apiTransport.cupola.invoice.get().then(async (res) => {
-        setResponse(res.data);
-        setCalls(1);
-      });
-    } catch {
-      console.log("err");
-    }
-  };
+      if (data?.type === "standard") {
+        await apiTransport.cupola.invoice.get().then(async (res) => {
+          setResponse(res.data);
+          setCalled(true);
+        });
+      } else if (data?.type === "custom") {
+        await apiTransport.cupola.invoice
+          .post({ ...childRef.current.sendDataToParent() })
+          .then(async (res) => {
+            console.log("post data", res.data.type);
 
-  const afterSet = async () => {
-    // Create a new instance of jsPDF for generating PDF output
-    const pdf = new jsPDF("portrait", "pt", "a4");
-    // Use html2canva to convert HTML element to canvas
-    const data = await html2canvas(
-      document.querySelector("#pdf") as HTMLElement
-    );
-    // Create an image object from canvas
-    const img = data.toDataURL("image/png");
-    // Get the width and height of the image
-    const imgProperties = pdf.getImageProperties(img);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-    // Add the image to the PDF document
-    pdf.addImage(img, "PNG", 0, 0, pdfWidth, pdfHeight);
-    // Save the PDF Document
-    const ID = response.invoiceNum.replace("#", "");
-    console.log("ID", ID);
-    pdf.save(`${response.invoiceFor["companyName"]}-invoice-${ID}.pdf`);
+            setResponse(res.data.type);
+            setCalled(true);
+          });
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
   };
 
   useEffect(() => {
-    if (response && calls > 0) {
-      afterSet();
-    }
-  }, [response]);
+    return () => {
+      setCalled(false);
+    };
+  }, [called]);
 
   useEffect(() => {
     if (data) setResponse(data);
@@ -57,13 +50,15 @@ export const PrintInvoice = ({ data }: any) => {
 
   return (
     <div data-testid="container">
-      <Button
-        onClick={handleDownloadPdf}
-        id="downloadButton"
-        label="Download"
-        data-testid="downloadButton"
-      ></Button>
-      <Invoice id="pdf" data={response}></Invoice>
+      <Invoice
+        id="pdf"
+        ref={childRef}
+        data={response}
+        call={called} //whenever download button is Clicked this will be pass
+        download={true} //if you want to show download Button
+        downloadBtnLabel="Download"
+        downloadCallback={handleDownloadPdf} //download button callback
+      ></Invoice>
     </div>
   );
 };

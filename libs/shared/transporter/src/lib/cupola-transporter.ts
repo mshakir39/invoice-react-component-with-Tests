@@ -26,6 +26,7 @@ export interface CupolaTransporter {
   };
   invoice: {
     get: (
+      type?: string,
       invoiceNum?: string,
       invoiceDate?: Date,
       terms?: string,
@@ -36,6 +37,18 @@ export interface CupolaTransporter {
       invoiceData?: Array<Record<string, string>>,
       notes?: string
     ) => Promise<AxiosResponse<InvoiceEntity>>;
+    post: (
+      type?: string,
+      invoiceNum?: string,
+      invoiceDate?: Date,
+      terms?: string,
+      from?: Record<string, string>,
+      invoiceFor?: Record<string, string>,
+      projectName?: string,
+      taxRate?: number,
+      invoiceData?: Array<Record<string, string>>,
+      notes?: string
+    ) => Promise<AxiosResponse<Partial<InvoiceEntity>>>;
   };
 
   project: {

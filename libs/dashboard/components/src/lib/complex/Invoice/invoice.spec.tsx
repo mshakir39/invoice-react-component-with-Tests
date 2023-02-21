@@ -1,10 +1,11 @@
 import { render } from "@testing-library/react";
 import Invoice from "./invoice";
-function getValueByPercentage(percent: any, originalValue: any) {
+function getValueByPercentage(percent: number, originalValue: number) {
   return (percent / 100) * originalValue;
 }
 describe("Invoice Component", () => {
   const response = {
+    type: "standard",
     invoiceNum: "#672368",
     invoiceDate: new Date().toLocaleDateString(),
     invoiceLogo: "asdas",
@@ -33,6 +34,7 @@ describe("Invoice Component", () => {
       number: "(555) 555-1212",
     },
     projectName: "Test Project",
+    notes: "",
   };
 
   it("should render with the appropriate data", () => {

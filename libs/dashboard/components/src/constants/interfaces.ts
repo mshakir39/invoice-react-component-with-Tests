@@ -43,6 +43,18 @@ export interface ITimeEntry {
   notes: string;
 }
 
+export interface Iinvoice {
+  type?: string;
+  invoiceNum?: string;
+  invoiceDate?: Date;
+  terms?: string;
+  from?: Record<string, string>;
+  invoiceFor?: Record<string, string>;
+  projectName?: string;
+  taxRate?: number;
+  invoiceData?: Array<Record<string, string>>;
+  notes?: string;
+}
 export interface ITimesheetHoursWorkedProp {
   startDate: string;
   endDate: string;

@@ -37,7 +37,7 @@ export interface APIRoutes {
     update: string;
   };
   timesheet: { get: string; post: string };
-  invoice: { get: string };
+  invoice: { get: string; post: string };
 }
 
 export const changeCurrentPhaseRoute = (id: string) =>
@@ -100,5 +100,6 @@ export const apiRoutes: APIRoutes = {
   },
   invoice: {
     get: "api/invoice",
+    post: "api/invoice",
   },
 };

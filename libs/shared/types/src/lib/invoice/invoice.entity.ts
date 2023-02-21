@@ -4,6 +4,9 @@ import { EntityMeta } from "../common/entity-meta";
 @Entity("invoice")
 export class InvoiceEntity extends EntityMeta {
   @Column()
+  type!: "standard" | "custom";
+
+  @Column()
   invoiceNum!: string;
 
   @Column()

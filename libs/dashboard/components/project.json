@@ -35,7 +35,6 @@
       "executor": "@nrwl/storybook:storybook",
       "options": {
         "uiFramework": "@storybook/react",
-        "host": "0.0.0.0",
         "port": 4400,
         "config": {
           "configFolder": "libs/dashboard/components/.storybook"

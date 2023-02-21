@@ -35,6 +35,7 @@ export class MockCupolaTransport implements CupolaTransporter {
       return new Promise<AxiosResponse>((resolve) =>
         resolve({
           data: {
+            type: "standard",
             invoiceNum: "#482676",
             invoiceDate: new Date().toLocaleDateString(),
             terms: "No terms",
@@ -69,6 +70,41 @@ export class MockCupolaTransport implements CupolaTransporter {
             notes: "not written yet",
           },
           status: 200,
+          statusText: "OK",
+          headers: {
+            ContentLocation: `/invoice}`,
+          },
+          config: {},
+        })
+      );
+    },
+    post: (
+      type?: string,
+      invoiceNum?: string,
+      invoiceDate?: Date,
+      terms?: string,
+      from?: Record<string, string>,
+      invoiceFor?: Record<string, string>,
+      projectName?: string,
+      taxRate?: number,
+      invoiceData?: Array<Record<string, string>>,
+      notes?: string
+    ): Promise<AxiosResponse<Partial<InvoiceEntity>>> => {
+      return new Promise<AxiosResponse>((resolve) =>
+        resolve({
+          data: {
+            type: type,
+            invoiceNum: invoiceNum,
+            invoiceDate: invoiceDate,
+            terms: terms,
+            from: from,
+            invoiceFor: invoiceFor,
+            projectName: projectName,
+            taxRate: taxRate,
+            invoiceData: invoiceData,
+            notes: notes,
+          },
+          status: 201,
           statusText: "OK",
           headers: {
             ContentLocation: `/invoice}`,
