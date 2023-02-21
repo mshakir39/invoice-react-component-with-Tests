@@ -14,6 +14,7 @@ export interface IUserUpdateForm {
 }
 export interface IButton {
   label: string;
+  type?: "button" | "reset" | "submit";
   variant?: "text" | "contained" | "outlined";
   color?: "inherit" | "default" | "primary" | "secondary" | undefined;
   onClick?: () => void;

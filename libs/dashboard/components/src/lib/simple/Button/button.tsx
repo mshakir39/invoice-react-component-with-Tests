@@ -14,6 +14,7 @@ const useStyles = makeStyles({
 export default function MyButton({
   label = "Click",
   variant = "contained",
+  type = "button",
   color = "primary",
   onClick,
   id,
@@ -23,6 +24,7 @@ export default function MyButton({
   return (
     <Button
       className={classes.root}
+      type={type}
       variant={variant}
       color={color}
       onClick={onClick}

@@ -16,8 +16,9 @@ export const PrintInvoice = ({ data }: Iprops) => {
     initMockTransport() // If you want to use real-backend, please comment on this line
   );
 
-  const handleDownloadPdf = async () => {
+  const handleDownloadPdf = async (e: any) => {
     try {
+      e.preventDefault();
       if (data?.type === "standard") {
         await apiTransport.cupola.invoice.get().then(async (res) => {
           setResponse(res.data);
@@ -27,8 +28,6 @@ export const PrintInvoice = ({ data }: Iprops) => {
         await apiTransport.cupola.invoice
           .post({ ...childRef.current.sendDataToParent() })
           .then(async (res) => {
-            console.log("post data", res.data.type);
-
             setResponse(res.data.type);
             setCalled(true);
           });
@@ -57,7 +56,7 @@ export const PrintInvoice = ({ data }: Iprops) => {
         call={called} //whenever download button is Clicked this will be pass
         download={true} //if you want to show download Button
         downloadBtnLabel="Download"
-        downloadCallback={handleDownloadPdf} //download button callback
+        downloadCallback={(e: any) => handleDownloadPdf(e)} //download button callback
       ></Invoice>
     </div>
   );
