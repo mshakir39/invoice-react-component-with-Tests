@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { GridMoreVertIcon } from "@mui/x-data-grid";
 import { useEffect } from "react";
 import { ITimesheetHoursWorkedProp } from "../../../constants/interfaces";
@@ -19,6 +19,7 @@ export const TimesheetHoursWorked = ({
         hoursAvailable,
         utilizationRate: (totalHoursWorked / hoursAvailable) * 100,
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate, totalHoursWorked, hoursAvailable]);
 
   return (
@@ -61,21 +62,25 @@ export const TimesheetHoursWorked = ({
       </Grid>
       <Grid container sx={{ padding: "15px 10px" }}>
         <Grid item xs={2.3}>
-          <span data-testid="start-date">{startDate}</span>
+          <Typography data-testid="start-date">{startDate}</Typography>
         </Grid>
         <Grid item xs={2.3}>
-          <span data-testid="end-date">{endDate}</span>
+          <Typography data-testid="end-date">{endDate}</Typography>
         </Grid>
         <Grid item xs={2.3}>
-          <span data-testid="total-hours-worked">{totalHoursWorked}</span>
+          <Typography data-testid="total-hours-worked">
+            {totalHoursWorked}
+          </Typography>
         </Grid>
         <Grid item xs={2.3}>
-          <span data-testid="hours-available">{hoursAvailable}</span>
+          <Typography data-testid="hours-available">
+            {hoursAvailable}
+          </Typography>
         </Grid>
         <Grid item xs={2.3}>
-          <span data-testid="utilization-rate">
+          <Typography data-testid="utilization-rate">
             {((totalHoursWorked / hoursAvailable) * 100).toFixed(2)}
-          </span>
+          </Typography>
         </Grid>
       </Grid>
     </Box>

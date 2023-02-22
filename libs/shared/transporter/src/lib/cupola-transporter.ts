@@ -1,14 +1,22 @@
-import { AxiosResponse } from "axios";
+import { AxiosInstance, AxiosResponse } from "axios";
 import {
   ProjectEntity,
   TimesheetEntryEntity,
 } from "@cupola/types";
+import { APIRoutes } from "./routes";
 
 export interface Transporter {
   cupola: CupolaTransporter;
 }
 
 export interface CupolaTransporter {
+  http: AxiosInstance;
+  host: string;
+  apiRoutes: APIRoutes;
+
+  project: {
+    getAll: (filter?: Partial<ProjectEntity>) => Promise<AxiosResponse>;
+  };
 
   timesheet: {
     get: (
@@ -23,8 +31,5 @@ export interface CupolaTransporter {
       notes: string,
       phase: string
     ) => Promise<AxiosResponse<Partial<TimesheetEntryEntity>>>;
-  };
-  project: {
-    getAll: (filter?: Partial<ProjectEntity>) => Promise<AxiosResponse<ProjectEntity[]>>;
   };
 }

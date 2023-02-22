@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -9,28 +11,22 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import { TimesheetHoursWorked } from "../timesheet-hours-worked/timesheet-hours-worked";
 import { TimesheetNoteDialog } from "../timesheet-note-dialog/timesheet-note-dialog";
 
 import {
-  ITimesheetsPage,
   ITimeEntry,
-  ITimesheetNoteForm,
   ITimesheet,
+  ITimesheetNoteForm,
+  ITimesheetsPage,
   TypeRow,
 } from "../../../constants/interfaces";
 
-import TabbedDisplay from "../tabbed-display/tabbed-display";
-import TabPanel from "../tabbed-display/tab-panel";
+import TabPanel from "../tabbed-display/tabbed-display";
 
-import {
-  initMockTransport,
-  initTransport,
-  Transporter,
-} from "@cupola/transporter";
+import { initTransport, Transporter } from "@cupola/transporter";
 import { useGlobalAppContext } from "../context/context";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -40,12 +36,12 @@ import {
   DataGrid,
   GridCellEditCommitParams,
   GridCellParams,
-  GridValueGetterParams,
   GridColDef,
   GridRenderCellParams,
+  GridValueGetterParams,
 } from "@mui/x-data-grid";
 
-import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
+import Tooltip, { tooltipClasses, TooltipProps } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
 import { DateTime } from "luxon";
 import { ProjectEntity, TimesheetEntryEntity } from "@cupola/types";
@@ -63,7 +59,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-const days = [
+export const days = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -72,6 +68,18 @@ const days = [
   "Saturday",
   "Sunday",
 ];
+
+export class DatesByDay {
+  [key: string]: DateTime;
+
+  Monday!: DateTime;
+  Tuesday!: DateTime;
+  Wednesday!: DateTime;
+  Thursday!: DateTime;
+  Friday!: DateTime;
+  Saturday!: DateTime;
+  Sunday!: DateTime;
+}
 
 const getDayName = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -85,31 +93,44 @@ export const TimesheetsPage = ({
 }: ITimesheetsPage) => {
   const state = useGlobalAppContext();
   const [apiTransport] = useState<Transporter>(
-    initMockTransport() // If you want to use real-backend, please comment on this line
-    // initTransport(() => state.apiHost || "") // TODO: use for real-backend (production)
+    initTransport(() => state.apiHost || "")
   );
 
+  const [projects, setProjects] = useState<ProjectEntity[]>([]);
   const [timesheets, setTimesheets] = useState<ITimesheet[]>([]);
   const [columns, setColumns] = useState<GridColDef[]>([]);
   const [selectWeekOf, setSelectWeekOf] = useState<DateTime>(
-    DateTime.local().setLocale("en-gb").startOf("week")
+    DateTime.local().setLocale("en-US").startOf("week")
   );
   const [openNoteDialog, setOpenNoteDialog] = useState<boolean>(false);
+
+  const datesByDay = new DatesByDay();
+
+  days.forEach((day, indexDay) => {
+    datesByDay[day as keyof DatesByDay] = DateTime.fromISO(
+      selectWeekOf.toString()
+    ).plus({ days: indexDay });
+  });
+
+  useEffect(() => {
+    (async () => {
+      const response = await apiTransport.cupola.project.getAll();
+      await setProjects(response.data);
+    })();
+  }, [apiTransport.cupola.project, setProjects]);
 
   // set columns
   useEffect(() => {
     const generalTaskWeek: GridColDef[] = days.map((day, indexDay) => ({
       field: day,
-      headerName: `${day} (${DateTime.fromISO(selectWeekOf.toString())
-        .plus({ days: indexDay })
-        .toFormat("MM/dd")})`,
+      headerName: `${day} (${datesByDay[days[indexDay]].toFormat("MM/dd")})`,
       type: "number",
       editable: true,
       headerAlign: "left",
       align: "left",
       width: 153,
       valueGetter: (params: GridValueGetterParams) => {
-        return `${params.value.hours || 0}`;
+        return `${params.value?.hours || 0}`;
       },
       renderCell: (params: GridRenderCellParams) => {
         return (
@@ -146,12 +167,11 @@ export const TimesheetsPage = ({
       {
         field: "addNotes",
         width: 120,
-        renderHeader: () => (
-          <AddIcon
-            onClick={() => setOpenNoteDialog((preState) => !preState)}
-            sx={{ color: "#6e6767", cursor: "pointer", marginLeft: "71px" }}
-          />
-        ),
+        renderHeader: () => "",
+        // <AddIcon
+        //   onClick={() => setOpenNoteDialog((preState) => !preState)}
+        //   sx={{ color: "#6e6767", cursor: "pointer", marginLeft: "71px" }}
+        // />
         hideSortIcons: true,
         hide: true,
         filterable: false,
@@ -160,11 +180,12 @@ export const TimesheetsPage = ({
         disableColumnMenu: true,
       },
     ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectWeekOf]);
 
   useEffect(() => {
     // fetch timesheet from api
-    const fetchTimesheet = async () => {
+    const handleTimesheets = async () => {
       const startDate = DateTime.fromISO(selectWeekOf.toISO()).toFormat(
         "yyyy-MM-dd"
       );
@@ -180,31 +201,23 @@ export const TimesheetsPage = ({
         );
 
       const formatDataForGridData: ITimesheet[] = [];
-      const projects: { data: ProjectEntity[] } =
-        await apiTransport.cupola.project.getAll(); // fetch all projects from api transport
-      // get unique project id in timeEntries
-      const projectId = [
-        ...new Set(data.map((item: TimesheetEntryEntity) => item.projectId)),
-      ];
+
       let rowID = 1;
-      projectId.forEach((id, indexProject) => {
-        // get project by id
-        const projectName =
-          projects.data.find((item) => item.id === id)?.name || "";
+      // Loop through each projects from API transport
+      projects.forEach((project, indexProject) => {
         //get time entries by project id
         const timeEntries = data.filter(
-          (e: TimesheetEntryEntity) => e.projectId === id
+          (e: TimesheetEntryEntity) => e.project.projectId === project.projectId
         );
-        // get unique phase in timeEntries
-        const phases = [
-          ...new Set(
-            timeEntries.map((item: TimesheetEntryEntity) => item.phase)
-          ),
-        ];
+        // get phases by project
+        const phases = project.derivedFeeTemplate?.templates.map(
+          (e) => e.phase
+        );
 
+        // 1. Handle total hours by project to `formatDataForGridData`
         const totalHoursByDay: { [index: string]: ITimeEntry } = {};
-        // 1. Format to add total hours by project
         days.forEach((day, dayIndex) => {
+          // get timeEntries by day
           const timeEntriesByDay = timeEntries.filter(
             (entry: TimesheetEntryEntity) =>
               DateTime.fromISO(entry.date.toString()).weekdayLong === day
@@ -222,16 +235,19 @@ export const TimesheetsPage = ({
         formatDataForGridData.push(
           renderRow(
             rowID,
-            projectName,
+            project.name,
             totalHoursByDay,
             totalHours(totalHoursByDay),
             TypeRow.Project,
-            ""
+            "",
+            project
           )
         );
+
         rowID++;
-        //2. Format to add phase row
-        phases.forEach((phase) => {
+
+        //2. Handle `phases` and Add phase row to `formatDataForGridData`
+        phases?.forEach((phase) => {
           const phaseByDay: { [index: string]: ITimeEntry } = {};
           const timeEntryByPhase = timeEntries.filter(
             (timeEntry: TimesheetEntryEntity) => timeEntry.phase === phase
@@ -252,13 +268,16 @@ export const TimesheetsPage = ({
               phaseByDay,
               totalHours(phaseByDay),
               TypeRow.Phase,
-              projectName
+              project.name,
+              project
             )
           );
           rowID++;
         });
       });
+
       //3. Total Projects work hours
+
       const totalHoursByProject: { [index: string]: ITimeEntry } = {};
       let totalAllOfProject = 0;
       days.forEach((day, index) => {
@@ -278,6 +297,7 @@ export const TimesheetsPage = ({
         };
         totalAllOfProject += totalHours;
       });
+
       formatDataForGridData.push(
         renderRow(
           rowID,
@@ -290,66 +310,82 @@ export const TimesheetsPage = ({
       );
       setTimesheets(formatDataForGridData);
     };
-    fetchTimesheet().catch(console.error);
-  }, [selectWeekOf]);
+    handleTimesheets().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectWeekOf, projects]);
 
   const handleCellEditCommit = useCallback(
     async ({ id, field, value }: GridCellEditCommitParams) => {
-      try {
-        if (typeof value === "object") return;
-        const newHours: number = value ? Number(value) : 0; // parse hours
-        const findRow: ITimesheet | undefined = timesheets.find(
-          (e) => e.id === id
-        );
-        if (findRow) {
-          const timeEntryByField = findRow[
-            field as keyof ITimesheet
-          ] as ITimeEntry;
-          // parse double hours from the entry to hours and minutes
+      if (typeof value !== "object") {
+        //Parses the input value into a number and assigns it to newHours.
+        const newHours = Number(value) || 0;
+        // Find row with matching id in timesheets
+        const row = timesheets.find((e) => e.id === id);
+
+        if (row && row.Project) {
+          const entryDate = datesByDay[field];
           const hoursWorked = Math.trunc(newHours);
-          const minutesWorked = 60 * (newHours - hoursWorked);
-          // save data to API
+          const timeEntry = (row[field as keyof ITimesheet] as ITimeEntry) || {
+            date: entryDate,
+            hours: 0,
+            minutes: 0,
+            notes: "",
+          };
+
+          const sumHours =
+            hoursWorked < timeEntry.hours
+              ? hoursWorked - timeEntry.hours
+              : timeEntry.hours + hoursWorked;
+
+          timeEntry.hours = hoursWorked;
+          timeEntry.minutes =
+            hoursWorked > 0 ? 60 * (newHours - hoursWorked) : 0;
+
+          //Saves the updated data to the API
           await apiTransport.cupola.timesheet.post(
-            new Date(String(timeEntryByField.date)),
+            entryDate.toJSDate(),
             hoursWorked,
-            minutesWorked,
-            findRow.PhaseOfProject,
-            timeEntryByField.notes,
-            findRow.PhaseName
+            timeEntry.minutes,
+            row.Project.id,
+            timeEntry.notes,
+            row.PhaseName
           );
-          const sumHours = newHours - timeEntryByField.hours; // input hours - prev-hours
-          const updateRows = timesheets.map((item) => {
-            const entryByDay: ITimeEntry = {
-              ...(item[field as keyof ITimesheet] as ITimeEntry),
-            };
-            // update Total hours, hours by ProjectName
-            if (
-              item.PhaseName === findRow.PhaseOfProject ||
-              item.PhaseName === "Total # Hours"
-            )
-              return {
-                ...item,
-                [field]: {
-                  ...entryByDay,
-                  hours: entryByDay.hours + sumHours,
-                },
-                TotalHours: item.TotalHours + sumHours,
+
+          // Update timesheets with new data
+          setTimesheets(
+            timesheets.map((item) => {
+              const entry = {
+                ...(item[field as keyof ITimesheet] as ITimeEntry),
               };
-            // update hours by phase
-            return item.id === id
-              ? {
+
+              // Update total hours and hours for matching phase or "Total # Hours"
+              if (
+                item.PhaseName === row.PhaseOfProject ||
+                item.PhaseName === "Total # Hours"
+              ) {
+                return {
                   ...item,
-                  [field]: { ...entryByDay, hours: newHours },
-                  TotalHours: findRow.TotalHours + sumHours,
-                }
-              : item;
-          });
-          setTimesheets(updateRows);
+                  [field]: { ...entry, hours: entry.hours + newHours },
+                  TotalHours: item.TotalHours + sumHours,
+                };
+              }
+
+              // Update total hours and hours for matching id
+              if (item.id === id) {
+                return {
+                  ...item,
+                  [field]: { ...entry, hours: sumHours },
+                  TotalHours: row.TotalHours + sumHours,
+                };
+              }
+
+              return item;
+            })
+          );
         }
-      } catch (error) {
-        console.log(error);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [timesheets]
   );
 
@@ -365,7 +401,8 @@ export const TimesheetsPage = ({
     hoursByDay: { [index: string]: ITimeEntry },
     TotalHours: number,
     Type: TypeRow,
-    PhaseOfProject: string
+    PhaseOfProject: string = "",
+    Project?: ProjectEntity
   ) => {
     return {
       id,
@@ -380,12 +417,14 @@ export const TimesheetsPage = ({
       TotalHours,
       Type,
       PhaseOfProject,
+      Project,
     } as ITimesheet;
   };
   // update onChangeData to testing
   useEffect(() => {
     timesheets.length > 1 &&
       onChangeTimesheetEntries(JSON.stringify(timesheets));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timesheets]);
 
   //  total of hours for the projects
@@ -399,17 +438,23 @@ export const TimesheetsPage = ({
     phase,
     notes,
   }: ITimesheetNoteForm) => {
+    // console.log(date.toString(), project, notes, phase);
     try {
       const dayName = getDayName(date.toString());
-      const findTimesheet = timesheets.find(
-        (e) => e.PhaseName === phase && e.PhaseOfProject === project
-      );
+      const findTimesheet = timesheets.find((e) => {
+        return (
+          e.PhaseName.toLowerCase() === phase.toLowerCase() &&
+          e.Project?.id === project
+        );
+      });
+
       if (findTimesheet) {
         const entryByDay = findTimesheet[
           dayName as keyof ITimesheet
         ] as ITimeEntry;
+
         // update notes API
-        const { data }: { data: Partial<TimesheetEntryEntity> } =
+        const response: { data: Partial<TimesheetEntryEntity> } =
           await apiTransport.cupola.timesheet.post(
             new Date(String(entryByDay.date)),
             entryByDay.hours,
@@ -418,7 +463,9 @@ export const TimesheetsPage = ({
             notes,
             phase
           );
-        /// update timesheets state from update notes api
+
+        console.log(response);
+        // update timesheets state from update notes api
         setTimesheets((prevState) => {
           return prevState.map((row) => {
             if (row.PhaseName === phase && row.PhaseOfProject === project) {
@@ -426,11 +473,11 @@ export const TimesheetsPage = ({
                 ...row,
                 [dayName]: {
                   date: DateTime.fromJSDate(
-                    new Date(String(data.date))
+                    new Date(String(response.data.date))
                   ).toFormat("yyyy-MM-dd"),
-                  hours: data.hours,
-                  minutes: data.minutes,
-                  notes: data.notes,
+                  hours: response.data.hours,
+                  minutes: response.data.minutes,
+                  notes: response.data.notes,
                 },
               };
             }
@@ -445,213 +492,210 @@ export const TimesheetsPage = ({
   };
   return (
     <Box style={{ maxWidth: 1440, fontSize: 18, margin: "0 auto" }}>
-      <TabbedDisplay
-        panelParent="tabs-page"
+      <TabPanel
         tabLabels={[
           "TIMESHEETS",
           "EXPENSES",
           "VACATION / SICK DAYS",
           "CONSULTANTS",
         ]}
-        tabColorSelected="orange"
       >
-        <TabPanel index={0}>
-          <>
-            <Box
-              display="flex"
-              alignItems="center"
+        <>
+          <Box
+            display="flex"
+            alignItems="center"
+            sx={{
+              background: "#f5e7d6",
+              height: 52,
+              paddingLeft: "15px",
+              paddingRight: "32px",
+            }}
+          >
+            <CupolaThemeProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Select Week"
+                  value={selectWeekOf}
+                  onChange={(value) => {
+                    if (value) {
+                      const convertDate = new Date(value.toString());
+                      setSelectWeekOf(
+                        DateTime.fromISO(convertDate.toISOString()).startOf(
+                          "week"
+                        )
+                      );
+                    }
+                  }}
+                  components={{
+                    OpenPickerIcon: () => (
+                      <DateRangeIcon
+                        sx={{
+                          color: "#6e6767",
+                        }}
+                      />
+                    ),
+                  }}
+                  OpenPickerButtonProps={{ style: { marginBottom: "10px" } }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      data-testid={`select-week-text-field`}
+                      variant="standard"
+                      required={true}
+                      margin="normal"
+                      InputProps={{
+                        ...params.InputProps,
+                        disableUnderline: true,
+                      }}
+                      sx={(theme) => ({
+                        label: {
+                          color: theme.palette.text.primary,
+                          marginTop: 1,
+                          marginLeft: "38px",
+                        },
+                        padding: 0,
+                        width: 130,
+                        margin: 0,
+                      })}
+                    />
+                  )}
+                  InputAdornmentProps={{ position: "start" }}
+                  data-testid={"select-week-picker"}
+                />
+              </LocalizationProvider>
+            </CupolaThemeProvider>
+          </Box>
+          <Accordion
+            defaultExpanded
+            sx={{
+              boxShadow: 0,
+              "&.Mui-expanded": {
+                margin: 0,
+              },
+              margin: 0,
+            }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: "#6e6767" }} />}
+              aria-controls="panel-account-settings-content"
               sx={{
-                background: "#f5e7d6",
+                background: "#eecdb1e8",
+                "&.Mui-expanded": { minHeight: 52, margin: 0 },
                 height: 52,
-                paddingLeft: "15px",
                 paddingRight: "32px",
               }}
             >
-              <CupolaThemeProvider>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    label="Select Week"
-                    value={selectWeekOf}
-                    onChange={(value) => {
-                      if (value) {
-                        const convertDate = new Date(value.toString());
-                        setSelectWeekOf(
-                          DateTime.fromISO(convertDate.toISOString()).startOf(
-                            "week"
-                          )
-                        );
-                      }
-                    }}
-                    components={{
-                      OpenPickerIcon: () => (
-                        <DateRangeIcon
-                          sx={{
-                            color: "#6e6767",
-                          }}
-                        />
-                      ),
-                    }}
-                    OpenPickerButtonProps={{ style: { marginBottom: "10px" } }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        data-testid={`select-week-text-field`}
-                        variant="standard"
-                        required={true}
-                        margin="normal"
-                        InputProps={{
-                          ...params.InputProps,
-                          disableUnderline: true,
-                        }}
-                        sx={(theme) => ({
-                          label: {
-                            color: theme.palette.text.primary,
-                            marginTop: 1,
-                            marginLeft: "38px",
-                          },
-                          padding: 0,
-                          width: 130,
-                          margin: 0,
-                        })}
-                      />
-                    )}
-                    InputAdornmentProps={{ position: "start" }}
-                    data-testid={"select-week-picker"}
-                  />
-                </LocalizationProvider>
-              </CupolaThemeProvider>
-            </Box>
-            <Accordion
-              defaultExpanded
-              sx={{
-                boxShadow: 0,
-                "&.Mui-expanded": {
-                  margin: 0,
-                },
-                margin: 0,
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ color: "#6e6767" }} />}
-                aria-controls="panel-account-settings-content"
+              <AccessTimeIcon
                 sx={{
-                  background: "#eecdb1e8",
-                  "&.Mui-expanded": { minHeight: 52, margin: 0 },
-                  height: 52,
-                  paddingRight: "32px",
+                  color: "#6e6767",
+                  marginRight: "32px",
+                  marginLeft: "-6px",
                 }}
-              >
-                <AccessTimeIcon
-                  sx={{
-                    color: "#6e6767",
-                    marginRight: "32px",
-                    marginLeft: "-6px",
-                  }}
-                />
-                <Typography>Timesheets</Typography>
-              </AccordionSummary>
-              <AccordionDetails style={{ padding: "0px" }}>
-                <TimesheetHoursWorked
-                  startDate={DateTime.fromISO(selectWeekOf.toISO()).toFormat(
-                    "yyyy-MM-dd"
-                  )}
-                  endDate={DateTime.fromISO(selectWeekOf.toISO())
-                    .plus({ days: 6 })
-                    .toFormat("yyyy-MM-dd")}
-                  totalHoursWorked={totalHourWorked || 0}
-                  hoursAvailable={40}
-                />
-                <DataGrid
-                  rows={timesheets}
-                  columns={columns}
-                  disableColumnMenu={false}
-                  disableVirtualization
-                  hideFooter
-                  autoHeight
-                  onCellEditCommit={handleCellEditCommit}
-                  isCellEditable={(params: GridCellParams) =>
-                    params.row.Type === TypeRow.Phase
-                  }
-                  getRowClassName={(params) => {
-                    if (
-                      params.row.Type === TypeRow.Project ||
-                      params.row.Type === TypeRow.Total
-                    )
-                      return "super-app total-cell";
-                    return "";
-                  }}
-                  componentsProps={{
-                    cell: {
-                      tabIndex: 0,
+              />
+              <Typography>Timesheets</Typography>
+            </AccordionSummary>
+            <AccordionDetails style={{ padding: "0px" }}>
+              <TimesheetHoursWorked
+                startDate={DateTime.fromISO(selectWeekOf.toISO()).toFormat(
+                  "yyyy-MM-dd"
+                )}
+                endDate={DateTime.fromISO(selectWeekOf.toISO())
+                  .plus({ days: 6 })
+                  .toFormat("yyyy-MM-dd")}
+                totalHoursWorked={totalHourWorked || 0}
+                hoursAvailable={40}
+              />
+              <DataGrid
+                rows={timesheets}
+                columns={columns}
+                disableColumnMenu={false}
+                disableVirtualization
+                hideFooter
+                autoHeight
+                onCellEditCommit={handleCellEditCommit}
+                isCellEditable={(params: GridCellParams) =>
+                  params.row.Type === TypeRow.Phase
+                }
+                getRowClassName={(params) => {
+                  if (
+                    params.row.Type === TypeRow.Project ||
+                    params.row.Type === TypeRow.Total
+                  )
+                    return "super-app total-cell";
+                  return "";
+                }}
+                componentsProps={{
+                  cell: {
+                    tabIndex: 0,
+                  },
+                }}
+                sx={[
+                  {
+                    "& .super-app-theme--cell": {
+                      backgroundColor: "#fffff",
                     },
-                  }}
-                  sx={[
-                    {
-                      "& .super-app-theme--cell": {
-                        backgroundColor: "#fffff",
-                      },
-                      "& .super-app.total-cell": {
-                        backgroundColor: "#f7ece2",
-                        marginTop: "1px",
-                      },
+                    "& .super-app.total-cell": {
+                      backgroundColor: "#f7ece2",
+                      marginTop: "1px",
                     },
-                    {
-                      "& .MuiDataGrid-columnHeaders": {
-                        background: "#f7ece2",
-                        outline: "none",
-                        fontSize: 16,
-                        borderBottom: "1px solid #d3d3d3",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-columnHeaders": {
+                      background: "#f7ece2",
+                      outline: "none",
+                      fontSize: 16,
+                      borderBottom: "1px solid #d3d3d3",
                     },
-                    {
-                      "& .MuiDataGrid-columnHeader:focus-within": {
-                        outline: "none",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-columnHeader:focus-within": {
+                      outline: "none",
                     },
-                    {
-                      "& .MuiDataGrid-cell": {
-                        border: "none",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-cell": {
+                      border: "none",
                     },
-                    {
-                      "& .MuiDataGrid-row.Mui-selected ": {
-                        background: "transparent",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-row.Mui-selected ": {
+                      background: "transparent",
                     },
-                    {
-                      "& .MuiDataGrid-row.Mui-selected:hover ": {
-                        background: "transparent",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-row.Mui-selected:hover ": {
+                      background: "transparent",
                     },
-                    {
-                      "& .MuiDataGrid-columnHeader--moving": {
-                        background: "transparent",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-columnHeader--moving": {
+                      background: "transparent",
                     },
-                    {
-                      "& .MuiDataGrid-columnHeaderTitleContainer:focus": {
-                        outline: "none",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-columnHeaderTitleContainer:focus": {
+                      outline: "none",
                     },
-                    {
-                      "& .MuiDataGrid-iconSeparator": {
-                        display: "none",
-                      },
+                  },
+                  {
+                    "& .MuiDataGrid-iconSeparator": {
+                      display: "none",
                     },
-                  ]}
-                />
-              </AccordionDetails>
-            </Accordion>
-            <TimesheetNoteDialog
-              startDate={selectWeekOf.toFormat("yyyy-MM-dd")}
-              title="Add a Note"
-              isOpen={openNoteDialog}
-              onSubmitForm={(timeEntry) => handleSubmitNote(timeEntry)}
-              onClose={() => setOpenNoteDialog(false)}
-            />
-          </>
-        </TabPanel>
-      </TabbedDisplay>
+                  },
+                ]}
+              />
+            </AccordionDetails>
+          </Accordion>
+          <TimesheetNoteDialog
+            startDate={selectWeekOf.toFormat("yyyy-MM-dd")}
+            title="Add a Note"
+            isOpen={openNoteDialog}
+            onSubmitForm={(timeEntry) => handleSubmitNote(timeEntry)}
+            onClose={() => setOpenNoteDialog(false)}
+            projects={projects}
+          />
+        </>
+      </TabPanel>
     </Box>
   );
 };

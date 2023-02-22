@@ -1,4 +1,41 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
+import { ProjectEntity } from "@cupola/types";
+
+declare module "react" {}
+
+export interface IUserUpdateForm {
+  email: string | null;
+  currPw: string | null;
+  newPw: string | null;
+  newPwConfirm: string | null;
+}
+
+export interface IInternalTeam {
+  id: string;
+  name: string;
+  roleId: string;
+  email: string;
+  phoneNumber: string;
+  weeklyTargetHours: number;
+  vacationDayAllowance: number;
+  sickDayAllowance: number;
+  billingRate: number;
+  salaryRate: number;
+}
+
+export const BlankTeamMember: IInternalTeam = {
+  id: "",
+  name: "",
+  roleId: "",
+  email: "",
+  phoneNumber: "",
+  weeklyTargetHours: 0,
+  vacationDayAllowance: 0,
+  sickDayAllowance: 0,
+  billingRate: 0,
+  salaryRate: 0,
+};
+
 declare module "react" {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
     nexttab?: string;
@@ -36,6 +73,15 @@ export interface ITimeEntry {
   notes: string;
 }
 
+export interface IWeeklyTimeEntry {
+  [index: string]: ITimeEntry;
+}
+
+export interface IWeeklyHours {
+  entries: IWeeklyTimeEntry;
+  totalHours: number;
+}
+
 export interface ITimesheetHoursWorkedProp {
   startDate: string;
   endDate: string;
@@ -63,6 +109,8 @@ export interface ITimsheetNoteDialog {
   isOpen: boolean;
   onSubmitForm: (timeEntry: ITimesheetNoteForm) => void;
   onClose?: () => void;
+
+  projects?: ProjectEntity[];
 }
 
 export enum TypeRow {
@@ -84,4 +132,6 @@ export interface ITimesheet {
   Sunday: ITimeEntry;
   Type: TypeRow;
   PhaseOfProject: string;
+
+  Project?: ProjectEntity;
 }

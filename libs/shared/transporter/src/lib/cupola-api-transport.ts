@@ -1,8 +1,10 @@
 import { CupolaTransporter } from "./cupola-transporter";
 import { AxiosInstance, AxiosResponse } from "axios";
 
-import { ProjectEntity, TimesheetEntryEntity } from "@cupola/types";
-
+import {
+  ProjectEntity,
+  TimesheetEntryEntity,
+} from "@cupola/types";
 import { APIRoutes } from "./routes";
 
 export class CupolaAPITransport implements CupolaTransporter {
@@ -20,13 +22,7 @@ export class CupolaAPITransport implements CupolaTransporter {
       return this.http.get(`${this.host}/${this.apiRoutes.projects.getAll}`, {
         params: filter,
       });
-    },
-  };
-
-  role = {
-    getAll: (): Promise<AxiosResponse> => {
-      return this.http.get(`${this.host}/${this.apiRoutes.role.getAll}`, {});
-    },
+    }
   };
 
   timesheet = {
