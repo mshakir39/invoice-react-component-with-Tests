@@ -46,6 +46,7 @@ import { styled } from "@mui/material/styles";
 import { DateTime } from "luxon";
 import { ProjectEntity, TimesheetEntryEntity } from "@cupola/types";
 import CupolaThemeProvider from "../../cupola-theme-provider/cupola-theme-provider";
+import { projectIsActiveWithPhases } from "../../pages/all-projects-page/all-projects-page";
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -115,7 +116,7 @@ export const TimesheetsPage = ({
   useEffect(() => {
     (async () => {
       const response = await apiTransport.cupola.project.getAll();
-      await setProjects(response.data);
+      await setProjects(response.data.filter(projectIsActiveWithPhases));
     })();
   }, [apiTransport.cupola.project, setProjects]);
 
@@ -128,7 +129,7 @@ export const TimesheetsPage = ({
       editable: true,
       headerAlign: "left",
       align: "left",
-      width: 153,
+      flex: 1,
       valueGetter: (params: GridValueGetterParams) => {
         return `${params.value?.hours || 0}`;
       },
@@ -150,7 +151,7 @@ export const TimesheetsPage = ({
       {
         field: "PhaseName",
         headerName: "Project Name",
-        width: 130,
+        flex: 1,
         editable: false,
         sortable: false,
       },
@@ -166,7 +167,7 @@ export const TimesheetsPage = ({
       },
       {
         field: "addNotes",
-        width: 120,
+        flex: 1,
         renderHeader: () => "",
         // <AddIcon
         //   onClick={() => setOpenNoteDialog((preState) => !preState)}
@@ -491,7 +492,7 @@ export const TimesheetsPage = ({
     setOpenNoteDialog(() => false);
   };
   return (
-    <Box style={{ maxWidth: 1440, fontSize: 18, margin: "0 auto" }}>
+    <Box style={{ fontSize: 18 }}>
       <TabPanel
         tabLabels={[
           "TIMESHEETS",

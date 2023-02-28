@@ -2,6 +2,7 @@ import React, { SyntheticEvent, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import { Box } from "@mui/system";
 
 /* eslint-disable-next-line */
 export interface TabbedDisplayProps {
@@ -9,7 +10,6 @@ export interface TabbedDisplayProps {
   selected?: number;
   tabLabels: string[];
   children: React.ReactNode;
-  tabColorSelected?: string
 }
 
 // To share varying state with TabPanel children.
@@ -19,7 +19,6 @@ export const TabbedDisplay: React.FC<TabbedDisplayProps> = ({
   panelParent = "unparented",
   selected = 0,
   tabLabels,
-  tabColorSelected,
   children,
 }) => {
   const tabSx = {
@@ -43,28 +42,24 @@ export const TabbedDisplay: React.FC<TabbedDisplayProps> = ({
       sx={(theme) => ({
         ...tabSx,
         backgroundColor: theme.palette.background.paper,
-        "&.Mui-selected": {
-          color: tabColorSelected ,
-        },
       })}
     />
   )) as React.ReactNode;
 
   return (
-    <TabContext.Provider value={selectedTab}>
-      <Tabs
-        variant="fullWidth"
-        value={selectedTab}
-        onChange={handleChange}
-        aria-label={`${panelParent}-tabbed-display`}
-        TabIndicatorProps={{
-          style: { display: "none" },
-        }}
-      >
-        {tabs}
-      </Tabs>
-      <Paper>{children}</Paper>
-    </TabContext.Provider>
+    <Box sx={{ width: "100%" }}>
+      <TabContext.Provider value={selectedTab}>
+        <Tabs
+          variant="fullWidth"
+          value={selectedTab}
+          onChange={handleChange}
+          aria-label={`${panelParent}-tabbed-display`}
+        >
+          {tabs}
+        </Tabs>
+        <Paper>{children}</Paper>
+      </TabContext.Provider>
+    </Box>
   );
 };
 
