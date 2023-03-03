@@ -1,15 +1,24 @@
-import { AxiosResponse } from "axios";
+import { AxiosInstance, AxiosResponse } from "axios";
 import {
   InvoiceEntity,
   ProjectEntity,
   TimesheetEntryEntity,
 } from "@cupola/types";
+import { APIRoutes } from "./routes";
 
 export interface Transporter {
   cupola: CupolaTransporter;
 }
 
 export interface CupolaTransporter {
+  http: AxiosInstance;
+  host: string;
+  apiRoutes: APIRoutes;
+
+  project: {
+    getAll: (filter?: Partial<ProjectEntity>) => Promise<AxiosResponse>;
+  };
+
   timesheet: {
     get: (
       startDate: Date,
@@ -49,11 +58,5 @@ export interface CupolaTransporter {
       invoiceData?: Array<Record<string, string>>,
       notes?: string
     ) => Promise<AxiosResponse<Partial<InvoiceEntity>>>;
-  };
-
-  project: {
-    getAll: (
-      filter?: Partial<ProjectEntity>
-    ) => Promise<AxiosResponse<ProjectEntity[]>>;
   };
 }

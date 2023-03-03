@@ -34,6 +34,6 @@ const Template: ComponentStory<typeof TimesheetNoteDialog> = (args) => {
 
 export const Primary = Template.bind({});
 Primary.args = {
-  startDate:"2022-12-19",
+  startDate: "2022-12-19",
   title: "Add a Note",
 };

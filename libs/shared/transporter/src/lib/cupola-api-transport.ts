@@ -81,12 +81,6 @@ export class CupolaAPITransport implements CupolaTransporter {
     },
   };
 
-  role = {
-    getAll: (): Promise<AxiosResponse> => {
-      return this.http.get(`${this.host}/${this.apiRoutes.role.getAll}`, {});
-    },
-  };
-
   timesheet = {
     get: (
       startDate: Date,
