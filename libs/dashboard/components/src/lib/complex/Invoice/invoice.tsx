@@ -14,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { Iinvoice } from "../../../constants/interfaces";
+import { InvoiceEntity } from "@cupola/types";
 
 const useStyles = makeStyles({
   flex: {
@@ -96,12 +97,12 @@ const useStyles = makeStyles({
 });
 
 type Tprops = {
-  ref?: any;
-  downloadCallback?: any;
+  ref?: HTMLElement;
+  downloadCallback?: (...args: any[]) => any;
   id?: string;
   download?: boolean;
   call?: boolean;
-  data: any;
+  data: InvoiceEntity;
   downloadBtnLabel?: string;
 };
 
@@ -125,7 +126,7 @@ const Invoice = forwardRef(
 
     const [invoiceData, setInvoiceData] = useState<any>();
     const [subTotal, setSubTotal] = useState<number>(0);
-    const [calls, setCalls] = useState<any>(false);
+    const [calls, setCalls] = useState<boolean | undefined>(false);
     const classes = useStyles();
 
     function getValueByPercentage(percent: number, originalValue: number) {
@@ -137,7 +138,7 @@ const Invoice = forwardRef(
       const key = name.split(":")[1];
       const dummyData = [...invoiceData.invoiceData];
 
-      dummyData[index][key] = value;
+      dummyData[index][key] = value === undefined ? "0" : value;
 
       setInvoiceData((prev: Iinvoice) => ({
         ...prev,
@@ -213,10 +214,19 @@ const Invoice = forwardRef(
       if (invoiceData && calls) {
         (async function () {
           const printElement = document.querySelector("#pdf") as HTMLElement;
-          const rowBtn = document.querySelectorAll(".hide") as any;
+          const inputElement = document.querySelectorAll(
+            "input"
+          ) as NodeListOf<HTMLInputElement>;
+          const rowBtn = document.querySelectorAll(
+            ".hide"
+          ) as NodeListOf<HTMLElement>;
 
           rowBtn.forEach((ele: HTMLElement) => {
             ele.style.display = "none";
+          });
+
+          inputElement.forEach((ele: HTMLElement) => {
+            ele.style.paddingTop = "8px";
           });
 
           html2canvas(printElement).then((canvas) => {
@@ -235,10 +245,19 @@ const Invoice = forwardRef(
           });
         })();
 
-        const rowBtn = document.querySelectorAll(".hide") as any;
+        const rowBtn = document.querySelectorAll(
+          ".hide"
+        ) as NodeListOf<HTMLElement>;
+
+        const inputElement = document.querySelectorAll(
+          "input"
+        ) as NodeListOf<HTMLInputElement>;
 
         rowBtn.forEach((ele: HTMLElement) => {
           ele.style.display = "block";
+        });
+        inputElement.forEach((ele: HTMLElement) => {
+          ele.style.paddingTop = "0px";
         });
       }
     }, [calls, invoiceData]);
@@ -423,7 +442,7 @@ const Invoice = forwardRef(
                           Item.description
                         )}
                       </td>
-                      <td className={classes.td}>
+                      <td className={classes.td} style={{ textAlign: "left" }}>
                         {data?.type === "custom" ? (
                           <CurrencyInput
                             className={classes.input_field}

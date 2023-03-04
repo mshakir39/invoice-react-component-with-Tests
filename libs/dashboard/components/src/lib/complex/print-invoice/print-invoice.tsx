@@ -7,8 +7,12 @@ interface Iprops {
   data?: Iinvoice;
 }
 
+interface CanSendDataToParent {
+  sendDataToParent(): any;
+}
+
 export const PrintInvoice = ({ data }: Iprops) => {
-  const childRef = useRef<any>();
+  const childRef = useRef<CanSendDataToParent>(null);
   const [response, setResponse] = useState<any>();
   const [called, setCalled] = useState<boolean>(false);
 
@@ -26,7 +30,7 @@ export const PrintInvoice = ({ data }: Iprops) => {
         });
       } else if (data?.type === "custom") {
         await apiTransport.cupola.invoice
-          .post({ ...childRef.current.sendDataToParent() })
+          .post({ ...childRef.current?.sendDataToParent() })
           .then(async (res) => {
             setResponse(res.data.type);
             setCalled(true);
