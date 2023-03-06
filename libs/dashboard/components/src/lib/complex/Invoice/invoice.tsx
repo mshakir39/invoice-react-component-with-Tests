@@ -13,8 +13,8 @@ import { numberWithCommas } from "../../../helpers/AddCommaInAmount";
 import DeleteIcon from "@mui/icons-material/Delete";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { Iinvoice } from "../../../constants/interfaces";
-import { InvoiceEntity } from "@cupola/types";
+import { Iinvoice, IinvoiceData } from "../../../constants/interfaces";
+import { getValueByPercentage } from "../../../helpers/getValueByPercentage";
 
 const useStyles = makeStyles({
   flex: {
@@ -53,6 +53,9 @@ const useStyles = makeStyles({
   flexColumn: {
     display: "flex",
     flexDirection: "column",
+  },
+  inline_block: {
+    display: "inline-block",
   },
   from: {
     display: "flex",
@@ -102,7 +105,7 @@ type Tprops = {
   id?: string;
   download?: boolean;
   call?: boolean;
-  data: any;
+  data: Iinvoice | undefined;
   downloadBtnLabel?: string;
 };
 
@@ -120,29 +123,28 @@ const Invoice = forwardRef(
   ) => {
     useImperativeHandle(ref, () => ({
       sendDataToParent() {
-        return invoiceData;
+        return invoiceInfo;
       },
     }));
 
-    const [invoiceData, setInvoiceData] = useState<any>();
+    const [invoiceInfo, setInvoiceInfo] = useState<Iinvoice | undefined>({});
     const [subTotal, setSubTotal] = useState<number>(0);
     const [calls, setCalls] = useState<boolean | undefined>(false);
     const classes = useStyles();
 
-    function getValueByPercentage(percent: number, originalValue: number) {
-      return (percent / 100) * originalValue;
-    }
+    const onChange = (value: string | undefined, name: string | undefined) => {
+      const index = Number(name?.split(":")[0]);
+      const key = name?.split(":")[1];
 
-    const onChange = (value: any, name: any) => {
-      const index = Number(name.split(":")[0]);
-      const key = name.split(":")[1];
-      const dummyData = [...invoiceData.invoiceData];
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      const dummyData = invoiceInfo?.invoiceData?.slice();
+      if (key !== undefined && dummyData)
+        dummyData[index][key as keyof typeof dummyData[typeof index]] =
+          value === undefined ? "0" : value;
 
-      dummyData[index][key] = value === undefined ? "0" : value;
-
-      setInvoiceData((prev: Iinvoice) => ({
+      setInvoiceInfo((prev: any) => ({
         ...prev,
-        invoiceData: [...dummyData],
+        invoiceData: dummyData,
       }));
     };
 
@@ -150,60 +152,63 @@ const Invoice = forwardRef(
       const { id, value } = e.target;
       const index = Number(id.split(":")[0]);
       const key = id.split(":")[1];
-      const dummyData = [...invoiceData.invoiceData];
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      const dummyData = invoiceInfo?.invoiceData?.slice();
+      if (key !== undefined && dummyData)
+        dummyData[index][key as keyof typeof dummyData[typeof index]] = value;
 
-      dummyData[index][key] = value;
-
-      setInvoiceData((prev: Iinvoice) => ({
+      setInvoiceInfo((prev: any) => ({
         ...prev,
-        invoiceData: [...dummyData],
+        invoiceData: dummyData,
       }));
     };
 
     const addRowHandler = () => {
-      const dummyData = [...invoiceData.invoiceData];
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      const dummyData = invoiceInfo?.invoiceData?.slice();
       const dummy = {
         description: "",
         price: 0,
         qty: 0,
       };
-      dummyData.push(dummy);
+      dummyData?.push(dummy);
 
-      setInvoiceData((prev: Iinvoice) => ({
+      setInvoiceInfo((prev: any) => ({
         ...prev,
-        invoiceData: [...dummyData],
+        invoiceData: dummyData,
       }));
     };
 
     const deleteRow = (index: number) => {
-      const newArr = [...invoiceData.invoiceData];
-      newArr.splice(index, 1);
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      const newArr = invoiceInfo?.invoiceData?.slice();
+      newArr?.splice(index, 1);
 
-      setInvoiceData((prev: Iinvoice) => ({
+      setInvoiceInfo((prev: any) => ({
         ...prev,
-        invoiceData: [...newArr],
+        invoiceData: newArr,
       }));
     };
 
     const sub_Total = useCallback(() => {
       let total = 0;
 
-      invoiceData?.invoiceData &&
-        invoiceData.invoiceData.forEach(
+      invoiceInfo?.invoiceData &&
+        invoiceInfo.invoiceData.forEach(
           (item: { description: string; price: number; qty: number }) => {
             total = item.qty * item.price + total;
           }
         );
 
       setSubTotal(total);
-    }, [invoiceData?.invoiceData]);
+    }, [invoiceInfo?.invoiceData]);
 
     useEffect(() => {
       sub_Total();
     }, [subTotal, sub_Total]);
 
     useEffect(() => {
-      setInvoiceData(data);
+      setInvoiceInfo(data);
     }, [data]);
 
     useEffect(() => {
@@ -211,7 +216,7 @@ const Invoice = forwardRef(
     }, [call]);
 
     useEffect(() => {
-      if (invoiceData && calls) {
+      if (invoiceInfo && calls) {
         (async function () {
           const printElement = document.querySelector("#pdf") as HTMLElement;
           const inputElement = document.querySelectorAll(
@@ -237,10 +242,12 @@ const Invoice = forwardRef(
             const pdfHeight =
               (imgProperties.height * pdfWidth) / imgProperties.width;
             pdf.addImage(img, "PNG", 0, 0, pdfWidth, pdfHeight);
-            const ID = invoiceData?.invoiceNum.replace("#", "");
+            const ID = invoiceInfo?.invoiceNum?.replace("#", "");
 
             pdf.save(
-              `${invoiceData?.invoiceFor["companyName"]}-invoice-${ID}.pdf`
+              `${
+                invoiceInfo?.invoiceFor && invoiceInfo.invoiceFor["companyName"]
+              }-invoice-${ID}.pdf`
             );
           });
         })();
@@ -260,7 +267,7 @@ const Invoice = forwardRef(
           ele.style.paddingTop = "0px";
         });
       }
-    }, [calls, invoiceData]);
+    }, [calls, invoiceInfo]);
 
     return (
       <Box className={classes.container} sx={{ pt: 10 }} id="pdf">
@@ -286,7 +293,7 @@ const Invoice = forwardRef(
                     </div>
                     <div style={{ width: "75%" }}>
                       <span data-testid="invoiceNum">
-                        {invoiceData?.invoiceNum}
+                        {invoiceInfo?.invoiceNum}
                       </span>
                     </div>
                   </Box>
@@ -296,7 +303,8 @@ const Invoice = forwardRef(
                     </div>
                     <div style={{ width: "75%" }}>
                       <span data-testid="invoiceDate">
-                        {invoiceData?.invoiceDate}
+                        {invoiceInfo?.invoiceDate &&
+                          invoiceInfo?.invoiceDate.toString()}
                       </span>
                     </div>
                   </Box>
@@ -305,7 +313,7 @@ const Invoice = forwardRef(
                       <span className={classes.bold}>Terms :</span>
                     </div>
                     <div style={{ width: "75%" }}>
-                      <span data-testid="terms">{invoiceData?.terms}</span>
+                      <span data-testid="terms">{invoiceInfo?.terms}</span>
                     </div>
                   </Box>
                   <Box className={classes.flex} sx={{ pt: 5 }}>
@@ -315,18 +323,19 @@ const Invoice = forwardRef(
                     <div style={{ width: "75%" }}>
                       <span className={classes.from}>
                         <span data-testid="fromCompanyName">
-                          {invoiceData?.from["companyName"]}
+                          {invoiceInfo?.from && invoiceInfo.from["companyName"]}
                         </span>
                         <span data-testid="fromStreetAddress">
-                          {invoiceData?.from["streetAddress"]}
+                          {invoiceInfo?.from &&
+                            invoiceInfo.from["streetAddress"]}
                         </span>
                         <span data-testid="fromCity">
-                          {invoiceData?.from["city"]},
-                          {invoiceData?.from["state"]},
-                          {invoiceData?.from["zip"]}
+                          {invoiceInfo?.from && invoiceInfo.from["city"]},
+                          {invoiceInfo?.from && invoiceInfo.from["state"]},
+                          {invoiceInfo?.from && invoiceInfo.from["zip"]}
                         </span>
                         <span data-testid="fromNumber">
-                          {invoiceData?.from["number"]}
+                          {invoiceInfo?.from && invoiceInfo.from["number"]}
                         </span>
                       </span>{" "}
                     </div>
@@ -337,7 +346,7 @@ const Invoice = forwardRef(
                     </div>
                     <div style={{ width: "75%" }}>
                       <span data-testid="fromProjectName">
-                        {invoiceData?.projectName}
+                        {invoiceInfo?.projectName}
                       </span>
                     </div>
                   </Box>
@@ -345,14 +354,14 @@ const Invoice = forwardRef(
               </div>
               <div className={classes.info_Container_child}>
                 <div className={classes.flexColumn}>
-                  <Box className={classes.flex}>
+                  <Box className={classes.inline_block}>
                     <div style={{ width: "25%" }}>
                       <img
                         className={classes.bold}
                         style={{ height: "100px" }}
                         alt=""
                         data-testid="invoiceLogo"
-                        src={invoiceData?.invoiceLogo}
+                        src={invoiceInfo?.invoiceLogo}
                       ></img>
                     </div>
                     <div style={{ width: "75%" }}></div>
@@ -364,18 +373,28 @@ const Invoice = forwardRef(
                     <div style={{ width: "75%" }}>
                       <span className={classes.from}>
                         <span data-testid="invoiceForCompanyName">
-                          {invoiceData?.invoiceFor["companyName"]}
+                          {invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["companyName"]}
                         </span>
                         <span data-testid="invoiceForStreetAddress">
-                          {invoiceData?.invoiceFor["streetAddress"]}
+                          {invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["streetAddress"]}
                         </span>
                         <span data-testid="invoiceForCity">
-                          {invoiceData?.invoiceFor["city"]},
-                          {invoiceData?.invoiceFor["state"]},
-                          {invoiceData?.invoiceFor["zip"]}
+                          {invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["city"] &&
+                            invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["city"]}
+                          ,
+                          {invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["state"]}
+                          ,
+                          {invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["zip"]}
                         </span>
                         <span data-testid="invoiceForNumber">
-                          {invoiceData?.invoiceFor["number"]}
+                          {invoiceInfo?.invoiceFor &&
+                            invoiceInfo.invoiceFor["number"]}
                         </span>
                       </span>{" "}
                     </div>
@@ -386,7 +405,7 @@ const Invoice = forwardRef(
                     </div>
                     <div style={{ width: "75%" }}>
                       <span data-testid="invoiceForProjectName">
-                        {invoiceData?.projectName}
+                        {invoiceInfo?.projectName}
                       </span>
                     </div>
                   </Box>
@@ -394,7 +413,7 @@ const Invoice = forwardRef(
               </div>
             </Box>
 
-            {invoiceData?.type === "custom" && (
+            {invoiceInfo?.type === "custom" && (
               <Box
                 textAlign={"end"}
                 className="hide"
@@ -424,107 +443,118 @@ const Invoice = forwardRef(
                     <th className={classes.th}>Price</th>
                     <th className={classes.th}>Amount</th>
                   </tr>
-                  {invoiceData?.invoiceData.map((Item: any, i: string) => (
-                    <tr key={i}>
-                      <td className={classes.description_td}>
-                        {data?.type === "custom" ? (
-                          <input
-                            className={classes.input_field}
-                            required
-                            data-cy="text-input"
-                            id={`${i}:description`}
-                            data-testid={`${i}:description`}
-                            type="text"
-                            value={Item.description}
-                            onChange={handleChange}
-                          />
-                        ) : (
-                          Item.description
-                        )}
-                      </td>
-                      <td className={classes.td} style={{ textAlign: "left" }}>
-                        {data?.type === "custom" ? (
-                          <CurrencyInput
-                            className={classes.input_field}
-                            id={`${i}:qty`}
-                            name={`${i}:qty`}
-                            placeholder="Please enter a number"
-                            defaultValue={0}
-                            decimalsLimit={2}
-                            data-testid={`${i}:qty`}
-                            data-cy="text-input"
-                            onValueChange={(value, name) =>
-                              onChange(value, name)
-                            }
-                            value={Item.qty}
-                            style={{
-                              fontSize: "16px",
-                              fontFamily: "inherit",
-                            }}
-                          />
-                        ) : (
-                          Item.qty
-                        )}
-                      </td>
-                      <td className={classes.td}>
-                        <Box
-                          pl={1}
-                          style={{ display: "flex", alignItems: "center" }}
-                        >
-                          $
-                          {data?.type === "custom" ? (
-                            <CurrencyInput
-                              className={classes.input_field}
-                              id={`${i}:price`}
-                              name={`${i}:price`}
-                              defaultValue={0}
-                              decimalsLimit={2}
-                              data-testid={`${i}:price`}
-                              data-cy="text-input"
-                              value={Item.price}
-                              onValueChange={(value, name) =>
-                                onChange(value, name)
-                              }
-                              style={{
-                                fontSize: "16px",
-                                fontFamily: "inherit",
-                              }}
-                            />
-                          ) : (
-                            `${Item.price}`
-                          )}
-                        </Box>
-                      </td>
-                      <td className={classes.td} id={`${i}amount`}>
-                        ${" "}
-                        {numberWithCommas(
-                          Number(
-                            Item.qty === 0
-                              ? 1 * Item.price
-                              : Item.price * Item.qty
-                          ).toFixed(2)
-                        )}
-                      </td>
-                      {invoiceData?.type === "custom" && (
-                        <td className="hide">
-                          <Box position={"absolute"}>
-                            {Number(i) !== 0 && (
-                              <DeleteIcon
-                                style={{ top: "-13px", position: "absolute" }}
-                                onClick={() => deleteRow(Number(i))}
-                                id="deleteRow"
-                                sx={{
-                                  color: "#e39c9c",
-                                  cursor: "pointer",
-                                  marginLeft: "10px",
+                  {invoiceInfo?.invoiceData &&
+                    invoiceInfo.invoiceData.map(
+                      (Item: IinvoiceData, i: number) => (
+                        <tr key={i}>
+                          <td className={classes.description_td}>
+                            {data?.type === "custom" ? (
+                              <input
+                                className={classes.input_field}
+                                required
+                                data-cy="text-input"
+                                id={`${i}:description`}
+                                data-testid={`${i}:description`}
+                                type="text"
+                                value={Item.description}
+                                onChange={handleChange}
+                              />
+                            ) : (
+                              Item.description
+                            )}
+                          </td>
+                          <td
+                            className={classes.td}
+                            style={{ textAlign: "left" }}
+                          >
+                            {data?.type === "custom" ? (
+                              <CurrencyInput
+                                className={classes.input_field}
+                                id={`${i}:qty`}
+                                name={`${i}:qty`}
+                                placeholder="Please enter a number"
+                                defaultValue={0}
+                                decimalsLimit={2}
+                                data-testid={`${i}:qty`}
+                                data-cy="text-input"
+                                onValueChange={(
+                                  value: string | undefined,
+                                  name?: string
+                                ) => onChange(value, name)}
+                                value={Item.qty}
+                                style={{
+                                  fontSize: "16px",
+                                  fontFamily: "inherit",
                                 }}
                               />
+                            ) : (
+                              Item.qty
                             )}
-                          </Box>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
+                          </td>
+                          <td className={classes.td}>
+                            <Box
+                              pl={1}
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              $
+                              {data?.type === "custom" ? (
+                                <CurrencyInput
+                                  className={classes.input_field}
+                                  id={`${i}:price`}
+                                  name={`${i}:price`}
+                                  defaultValue={0}
+                                  decimalsLimit={2}
+                                  data-testid={`${i}:price`}
+                                  data-cy="text-input"
+                                  value={Item.price}
+                                  onValueChange={(
+                                    value: string | undefined,
+                                    name?: string
+                                  ) => onChange(value, name)}
+                                  style={{
+                                    fontSize: "16px",
+                                    fontFamily: "inherit",
+                                  }}
+                                />
+                              ) : (
+                                `${Item.price}`
+                              )}
+                            </Box>
+                          </td>
+                          <td className={classes.td} id={`${i}amount`}>
+                            ${" "}
+                            {numberWithCommas(
+                              Number(
+                                Item.qty === 0
+                                  ? 1 * Item.price
+                                  : Item.price * Item.qty
+                              ).toFixed(2)
+                            )}
+                          </td>
+                          {invoiceInfo?.type === "custom" && (
+                            <td className="hide">
+                              <Box position={"absolute"}>
+                                {Number(i) !== 0 && (
+                                  <DeleteIcon
+                                    style={{
+                                      top: "-13px",
+                                      position: "absolute",
+                                    }}
+                                    onClick={() => deleteRow(Number(i))}
+                                    id="deleteRow"
+                                    sx={{
+                                      color: "#e39c9c",
+                                      cursor: "pointer",
+                                      marginLeft: "10px",
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                            </td>
+                          )}
+                        </tr>
+                      )
+                    )}
 
                   <tr>
                     <td></td>
@@ -542,7 +572,7 @@ const Invoice = forwardRef(
                     <td className={classes.tdNoBorder}>Tax Rate</td>
                     <td className={classes.td}>
                       {" "}
-                      {invoiceData?.taxRate + " %"}
+                      {invoiceInfo?.taxRate + " %"}
                     </td>
                   </tr>
                   <tr>
@@ -551,11 +581,14 @@ const Invoice = forwardRef(
                     <td className={classes.tdNoBorder}>Tax</td>
                     <td className={classes.td}>
                       {" "}
-                      {getValueByPercentage(invoiceData?.taxRate, subTotal)
+                      {getValueByPercentage(
+                        invoiceInfo?.taxRate ? invoiceInfo?.taxRate : 0,
+                        subTotal
+                      )
                         ? "$ " +
                           numberWithCommas(
                             getValueByPercentage(
-                              invoiceData?.taxRate,
+                              invoiceInfo?.taxRate ? invoiceInfo?.taxRate : 0,
                               subTotal
                             ).toFixed(2)
                           )
@@ -572,13 +605,18 @@ const Invoice = forwardRef(
                       id="amountDue"
                     >
                       {Number(
-                        getValueByPercentage(invoiceData?.taxRate, subTotal)
+                        getValueByPercentage(
+                          invoiceInfo?.taxRate ? invoiceInfo?.taxRate : 0,
+                          subTotal
+                        )
                       ) + Number(subTotal)
                         ? `$ ${numberWithCommas(
                             Number(
                               Number(
                                 getValueByPercentage(
-                                  invoiceData?.taxRate,
+                                  invoiceInfo?.taxRate
+                                    ? invoiceInfo?.taxRate
+                                    : 0,
                                   subTotal
                                 )
                               ) + Number(subTotal)
@@ -597,7 +635,7 @@ const Invoice = forwardRef(
 
                 <span style={{ paddingTop: "8px" }} data-testid="notes">
                   {" "}
-                  {invoiceData?.notes}
+                  {invoiceInfo?.notes}
                 </span>
               </Box>
             </Box>

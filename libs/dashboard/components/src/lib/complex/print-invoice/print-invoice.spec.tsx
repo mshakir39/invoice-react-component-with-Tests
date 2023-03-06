@@ -98,9 +98,10 @@ jest.mock("@cupola/transporter", () => {
   };
 });
 
-const data = {
+const data: any = {
   type: "custom",
   invoiceNum: "#482676",
+  invoiceLogo: "asdasd",
   invoiceDate: new Date().toLocaleDateString(),
   terms: "No terms",
   from: {
@@ -137,7 +138,7 @@ describe("Invoice component", () => {
     jest.clearAllMocks();
   });
   it("should render successfully", async () => {
-    const { container } = render(<PrintInvoice />);
+    const { container } = render(<PrintInvoice data={data} />);
 
     expect(container).toBeTruthy();
 

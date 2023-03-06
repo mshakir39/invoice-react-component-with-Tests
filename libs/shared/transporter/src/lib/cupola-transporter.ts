@@ -33,10 +33,12 @@ export interface CupolaTransporter {
       phase: string
     ) => Promise<AxiosResponse<Partial<TimesheetEntryEntity>>>;
   };
+
   invoice: {
     get: (
       type?: string,
       invoiceNum?: string,
+      invoiceLogo?: string,
       invoiceDate?: Date,
       terms?: string,
       from?: Record<string, string>,
@@ -49,6 +51,7 @@ export interface CupolaTransporter {
     post: (
       type?: string,
       invoiceNum?: string,
+      invoiceLogo?: string,
       invoiceDate?: Date,
       terms?: string,
       from?: Record<string, string>,

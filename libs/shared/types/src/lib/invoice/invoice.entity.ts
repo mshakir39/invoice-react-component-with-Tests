@@ -1,10 +1,14 @@
 import { Column, Entity, OneToMany } from "typeorm";
 import { EntityMeta } from "../common/entity-meta";
+import {
+  IfromAndfor,
+  IinvoiceData,
+} from "../../lib/../../../../../libs/dashboard/components/src/constants/interfaces";
 
 @Entity("invoice")
 export class InvoiceEntity extends EntityMeta {
   @Column()
-  type!: "standard" | "custom";
+  type!: string;
 
   @Column()
   invoiceNum!: string;
@@ -13,13 +17,16 @@ export class InvoiceEntity extends EntityMeta {
   invoiceDate!: Date;
 
   @Column()
+  invoiceLogo!: string;
+
+  @Column()
   terms!: string;
 
   @Column()
-  From!: Record<string, string>;
+  from!: IfromAndfor;
 
   @Column()
-  invoiceFor!: Record<string, string>;
+  invoiceFor!: IfromAndfor;
 
   @Column()
   projectName!: string;
@@ -28,7 +35,7 @@ export class InvoiceEntity extends EntityMeta {
   taxRate!: number;
 
   @Column()
-  invoiceData!: Array<Record<string, string>>;
+  invoiceData!: IinvoiceData[];
 
   @Column()
   notes!: string;

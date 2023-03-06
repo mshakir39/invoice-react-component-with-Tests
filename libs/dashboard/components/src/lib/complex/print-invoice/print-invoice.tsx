@@ -1,26 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import Invoice from "../Invoice/invoice";
-import { Iinvoice } from "../../../constants/interfaces";
 import { Transporter, initMockTransport } from "@cupola/transporter";
-
-interface Iprops {
-  data?: Iinvoice;
-}
+import { Iinvoice } from "../../../constants/interfaces";
+import { InvoiceEntity } from "@cupola/types";
 
 interface CanSendDataToParent {
   sendDataToParent(): any;
 }
+type invoiceProps = {
+  data?: InvoiceEntity;
+};
 
-export const PrintInvoice = ({ data }: Iprops) => {
+export const PrintInvoice = ({ data }: invoiceProps) => {
   const childRef = useRef<CanSendDataToParent>(null);
-  const [response, setResponse] = useState<any>();
+  const [response, setResponse] = useState<Iinvoice>();
   const [called, setCalled] = useState<boolean>(false);
 
   const [apiTransport] = useState<Transporter>(
     initMockTransport() // If you want to use real-backend, please comment on this line
   );
 
-  const handleDownloadPdf = async (e: any) => {
+  const handleDownloadPdf = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       if (data?.type === "standard") {
@@ -32,7 +32,8 @@ export const PrintInvoice = ({ data }: Iprops) => {
         await apiTransport.cupola.invoice
           .post({ ...childRef.current?.sendDataToParent() })
           .then(async (res) => {
-            setResponse(res.data.type);
+            const data = res.data.type as any;
+            setResponse(data);
             setCalled(true);
           });
       }
@@ -60,7 +61,9 @@ export const PrintInvoice = ({ data }: Iprops) => {
         call={called} //whenever download button is Clicked this will be pass
         download={true} //if you want to show download Button
         downloadBtnLabel="Download"
-        downloadCallback={(e: any) => handleDownloadPdf(e)} //download button callback
+        downloadCallback={(e: React.FormEvent<HTMLFormElement>) =>
+          handleDownloadPdf(e)
+        } //download button callback
       ></Invoice>
     </div>
   );

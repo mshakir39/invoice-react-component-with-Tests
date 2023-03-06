@@ -61,6 +61,7 @@ export class MockCupolaTransport implements CupolaTransporter {
     post: (
       type?: string,
       invoiceNum?: string,
+      invoiceLogo?: string,
       invoiceDate?: Date,
       terms?: string,
       from?: Record<string, string>,
@@ -75,6 +76,7 @@ export class MockCupolaTransport implements CupolaTransporter {
           data: {
             type: type,
             invoiceNum: invoiceNum,
+            invoiceLogo: invoiceLogo,
             invoiceDate: invoiceDate,
             terms: terms,
             from: from,

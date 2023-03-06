@@ -81,16 +81,31 @@ export interface ITimeEntry {
   notes: string;
 }
 
+export interface IfromAndfor {
+  companyName: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zip: string;
+  number: string;
+}
+
+export interface IinvoiceData {
+  description: string;
+  qty: any;
+  price: any;
+}
 export interface Iinvoice {
   type?: string;
   invoiceNum?: string;
+  invoiceLogo?: string;
   invoiceDate?: Date;
   terms?: string;
-  from?: Record<string, string>;
-  invoiceFor?: Record<string, string>;
+  from?: IfromAndfor;
+  invoiceFor?: IfromAndfor;
   projectName?: string;
   taxRate?: number;
-  invoiceData?: Array<Record<string, string>>;
+  invoiceData?: IinvoiceData[];
   notes?: string;
 }
 export interface IWeeklyTimeEntry {

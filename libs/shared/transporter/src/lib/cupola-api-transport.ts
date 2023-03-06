@@ -30,6 +30,7 @@ export class CupolaAPITransport implements CupolaTransporter {
     get: (
       type?: string,
       invoiceNum?: string,
+      invoiceLogo?: string,
       invoiceDate?: Date,
       terms?: string,
       from?: Record<string, string>,
@@ -44,6 +45,7 @@ export class CupolaAPITransport implements CupolaTransporter {
           type: type,
           invoiceNum: invoiceNum,
           invoiceDate: invoiceDate,
+          invoiceLogo: invoiceLogo,
           terms: terms,
           from: from,
           invoiceFor: invoiceFor,
@@ -57,6 +59,7 @@ export class CupolaAPITransport implements CupolaTransporter {
     post: (
       type?: string,
       invoiceNum?: string,
+      invoiceLogo?: string,
       invoiceDate?: Date,
       terms?: string,
       from?: Record<string, string>,
@@ -69,6 +72,7 @@ export class CupolaAPITransport implements CupolaTransporter {
       return this.http.post(`${this.host}/${this.apiRoutes.invoice.post}`, {
         type: type,
         invoiceNum: invoiceNum,
+        invoiceLogo: invoiceLogo,
         invoiceDate: invoiceDate,
         terms: terms,
         from: from,
