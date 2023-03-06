@@ -102,7 +102,7 @@ type Tprops = {
   id?: string;
   download?: boolean;
   call?: boolean;
-  data: InvoiceEntity;
+  data: any;
   downloadBtnLabel?: string;
 };
 
