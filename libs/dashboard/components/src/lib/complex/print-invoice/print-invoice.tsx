@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Invoice from "../Invoice/invoice";
 import { Transporter, initMockTransport } from "@cupola/transporter";
-import { Iinvoice } from "../../../constants/interfaces";
-import { InvoiceEntity } from "@cupola/types";
+import { IInvoice, InvoiceEntity } from "@cupola/types";
 
 interface CanSendDataToParent {
   sendDataToParent(): any;
@@ -13,7 +12,7 @@ type invoiceProps = {
 
 export const PrintInvoice = ({ data }: invoiceProps) => {
   const childRef = useRef<CanSendDataToParent>(null);
-  const [response, setResponse] = useState<Iinvoice>();
+  const [response, setResponse] = useState<IInvoice>();
   const [called, setCalled] = useState<boolean>(false);
 
   const [apiTransport] = useState<Transporter>(

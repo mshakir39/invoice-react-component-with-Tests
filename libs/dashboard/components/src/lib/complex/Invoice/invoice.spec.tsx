@@ -1,9 +1,9 @@
 import { render } from "@testing-library/react";
-import { Iinvoice } from "../../../constants/interfaces";
+import { IInvoice } from "@cupola/types";
 import { getValueByPercentage } from "../../../helpers/getValueByPercentage";
 import Invoice from "./invoice";
 
-const response: any = {
+const response: IInvoice = {
   type: "standard",
   invoiceNum: "#672368",
   invoiceDate: new Date().toLocaleDateString(),
@@ -43,20 +43,23 @@ describe("Invoice Component", () => {
       <Invoice id="pdf" data={response} />
     );
 
-    expect(getByText(response.invoiceNum)?.textContent).toContain(
+    expect(getByText(response.invoiceNum || "")?.textContent).toContain(
       response.invoiceNum
     );
-    expect(getByText(response.invoiceDate)?.textContent).toContain(
+
+    const dateText = typeof response.invoiceDate === "string" ? response.invoiceDate : (response.invoiceDate || new Date()).toLocaleDateString();
+
+    expect(getByText(dateText)?.textContent).toContain(
       response.invoiceDate
     );
-    expect(getByText(response.terms)?.textContent).toContain(response.terms);
-    expect(getByText(response.from.companyName)?.textContent).toContain(
-      response.from.companyName
+    expect(getByText(response.terms|| "")?.textContent).toContain(response.terms);
+    expect(getByText(response.from?.companyName || "")?.textContent).toContain(
+      response.from?.companyName || ""
     );
-    expect(getByText(response.from.streetAddress)?.textContent).toContain(
-      response.from.streetAddress
+    expect(getByText(response.from?.streetAddress || "")?.textContent).toContain(
+      response.from?.streetAddress || ""
     );
-    expect(getAllByText(response.projectName)?.length).toBe(2);
+    expect(getAllByText(response.projectName || "")?.length).toBe(2);
 
     expect(baseElement).toBeTruthy();
   });

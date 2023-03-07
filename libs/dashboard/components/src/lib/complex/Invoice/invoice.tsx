@@ -13,7 +13,7 @@ import { numberWithCommas } from "../../../helpers/AddCommaInAmount";
 import DeleteIcon from "@mui/icons-material/Delete";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { Iinvoice, IinvoiceData } from "../../../constants/interfaces";
+import { IInvoice, IInvoiceRow } from "@cupola/types";
 import { getValueByPercentage } from "../../../helpers/getValueByPercentage";
 
 const useStyles = makeStyles({
@@ -105,7 +105,7 @@ type Tprops = {
   id?: string;
   download?: boolean;
   call?: boolean;
-  data: Iinvoice | undefined;
+  data: IInvoice | undefined;
   downloadBtnLabel?: string;
 };
 
@@ -127,7 +127,7 @@ const Invoice = forwardRef(
       },
     }));
 
-    const [invoiceInfo, setInvoiceInfo] = useState<Iinvoice | undefined>({});
+    const [invoiceInfo, setInvoiceInfo] = useState<IInvoice | undefined>({});
     const [subTotal, setSubTotal] = useState<number>(0);
     const [calls, setCalls] = useState<boolean | undefined>(false);
     const classes = useStyles();
@@ -445,7 +445,7 @@ const Invoice = forwardRef(
                   </tr>
                   {invoiceInfo?.invoiceData &&
                     invoiceInfo.invoiceData.map(
-                      (Item: IinvoiceData, i: number) => (
+                      (Item: IInvoiceRow, i: number) => (
                         <tr key={i}>
                           <td className={classes.description_td}>
                             {data?.type === "custom" ? (

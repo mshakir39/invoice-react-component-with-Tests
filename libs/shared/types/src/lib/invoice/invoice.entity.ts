@@ -1,9 +1,10 @@
 import { Column, Entity, OneToMany } from "typeorm";
 import { EntityMeta } from "../common/entity-meta";
 import {
-  IfromAndfor,
-  IinvoiceData,
-} from "../../lib/../../../../../libs/dashboard/components/src/constants/interfaces";
+  IInvoiceCompany,
+
+} from "./i-invoice-company";
+import {IInvoiceRow} from "./i-invoice-row";
 
 @Entity("invoice")
 export class InvoiceEntity extends EntityMeta {
@@ -23,10 +24,10 @@ export class InvoiceEntity extends EntityMeta {
   terms!: string;
 
   @Column()
-  from!: IfromAndfor;
+  from!: IInvoiceCompany;
 
   @Column()
-  invoiceFor!: IfromAndfor;
+  invoiceFor!: IInvoiceCompany;
 
   @Column()
   projectName!: string;
@@ -35,7 +36,7 @@ export class InvoiceEntity extends EntityMeta {
   taxRate!: number;
 
   @Column()
-  invoiceData!: IinvoiceData[];
+  invoiceData!: IInvoiceRow[];
 
   @Column()
   notes!: string;
