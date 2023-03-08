@@ -1,5 +1,4 @@
 import { makeStyles } from "@material-ui/core/styles";
-import CurrencyInput from "react-currency-input-field";
 import Box from "@mui/material/Box";
 import {
   useEffect,
@@ -8,7 +7,9 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import Button from "../../simple/Button/button";
+
+import AcceptButton from "../../simple/accept-button/accept-button";
+import { DollarInput } from "../../simple/dollar-input/dollar-input";
 import { numberWithCommas } from "../../../helpers/AddCommaInAmount";
 import DeleteIcon from "@mui/icons-material/Delete";
 import jsPDF from "jspdf";
@@ -107,6 +108,7 @@ type Tprops = {
   call?: boolean;
   data: IInvoice | undefined;
   downloadBtnLabel?: string;
+  target?: string;
 };
 
 const Invoice = forwardRef(
@@ -117,6 +119,7 @@ const Invoice = forwardRef(
       download = false,
       downloadCallback,
       call,
+      target,
       downloadBtnLabel = "Download",
     }: Tprops,
     ref
@@ -132,26 +135,20 @@ const Invoice = forwardRef(
     const [calls, setCalls] = useState<boolean | undefined>(false);
     const classes = useStyles();
 
-    const onChange = (value: string | undefined, name: string | undefined) => {
-      const index = Number(name?.split(":")[0]);
-      const key = name?.split(":")[1];
-
-      // eslint-disable-next-line no-unsafe-optional-chaining
-      const dummyData = invoiceInfo?.invoiceData?.slice();
-      if (key !== undefined && dummyData)
-        dummyData[index][key as keyof typeof dummyData[typeof index]] =
-          value === undefined ? "0" : value;
-
-      setInvoiceInfo((prev: any) => ({
-        ...prev,
-        invoiceData: dummyData,
-      }));
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { id, value } = e.target;
-      const index = Number(id.split(":")[0]);
-      const key = id.split(":")[1];
+      const { id, value, name } = e.target;
+
+      let key;
+      let index;
+
+      if (id) {
+        key = id.split(":")[1];
+        index = Number(id.split(":")[0]);
+      } else {
+        index = Number(name.split(":")[0]);
+
+        key = name.split(":")[1];
+      }
       // eslint-disable-next-line no-unsafe-optional-chaining
       const dummyData = invoiceInfo?.invoiceData?.slice();
       if (key !== undefined && dummyData)
@@ -275,12 +272,13 @@ const Invoice = forwardRef(
           <form onSubmit={downloadCallback}>
             {download ? (
               <Box className="hide">
-                <Button
+                <AcceptButton
                   type="submit"
                   id="downloadButton"
-                  label={downloadBtnLabel}
-                  data-testid="downloadButton"
-                ></Button>
+                  dataTestId="downloadButton"
+                  text={downloadBtnLabel}
+                  fullWidth={false}
+                ></AcceptButton>
               </Box>
             ) : null}
             <div className={classes.title}>INVOICE</div>
@@ -420,11 +418,23 @@ const Invoice = forwardRef(
                 id="addRowContainer"
                 data-testid="addRowContainer"
               >
-                <Button
-                  label="Add Row"
-                  onClick={addRowHandler}
-                  data-testid="addRow"
-                ></Button>
+                {target !== "test" ? (
+                  <AcceptButton
+                    type="button"
+                    data-testid="addRow"
+                    onClick={addRowHandler}
+                    text={"Add Row"}
+                    fullWidth={false}
+                  ></AcceptButton>
+                ) : (
+                  <button
+                    type="button"
+                    data-testid="addRow"
+                    onClick={addRowHandler}
+                  >
+                    Add Row
+                  </button>
+                )}
               </Box>
             )}
 
@@ -467,24 +477,21 @@ const Invoice = forwardRef(
                             className={classes.td}
                             style={{ textAlign: "left" }}
                           >
+                            {
+                              // this Component has more functionality that was used before
+                              // thats why i have replaced input field by DollarInput
+                            }
                             {data?.type === "custom" ? (
-                              <CurrencyInput
-                                className={classes.input_field}
+                              <DollarInput
+                                onChange={handleChange}
                                 id={`${i}:qty`}
-                                name={`${i}:qty`}
-                                placeholder="Please enter a number"
-                                defaultValue={0}
-                                decimalsLimit={2}
-                                data-testid={`${i}:qty`}
-                                data-cy="text-input"
-                                onValueChange={(
-                                  value: string | undefined,
-                                  name?: string
-                                ) => onChange(value, name)}
                                 value={Item.qty}
-                                style={{
-                                  fontSize: "16px",
-                                  fontFamily: "inherit",
+                                dataTestId={`${i}:qty`}
+                                data-cy="text-input"
+                                sx={{ height: "100%" }}
+                                inputProps={{
+                                  disableUnderline: true,
+                                  "data-testid": `${i}:qty`,
                                 }}
                               />
                             ) : (
@@ -496,24 +503,17 @@ const Invoice = forwardRef(
                               pl={1}
                               style={{ display: "flex", alignItems: "center" }}
                             >
-                              $
                               {data?.type === "custom" ? (
-                                <CurrencyInput
-                                  className={classes.input_field}
+                                <DollarInput
+                                  onChange={handleChange}
                                   id={`${i}:price`}
-                                  name={`${i}:price`}
-                                  defaultValue={0}
-                                  decimalsLimit={2}
-                                  data-testid={`${i}:price`}
-                                  data-cy="text-input"
                                   value={Item.price}
-                                  onValueChange={(
-                                    value: string | undefined,
-                                    name?: string
-                                  ) => onChange(value, name)}
-                                  style={{
-                                    fontSize: "16px",
-                                    fontFamily: "inherit",
+                                  dataTestId={`${i}:price`}
+                                  data-cy="text-input"
+                                  sx={{ height: "100%" }}
+                                  inputProps={{
+                                    disableUnderline: true,
+                                    "data-testid": `${i}:price`,
                                   }}
                                 />
                               ) : (

@@ -6,6 +6,7 @@ import {
   waitFor,
   screen,
 } from "@testing-library/react";
+import { shallow } from "enzyme";
 import { PrintInvoice } from "../print-invoice/print-invoice";
 import { InvoiceEntity } from "@cupola/types";
 jest.mock("@cupola/transporter", () => {
@@ -163,7 +164,9 @@ describe("Invoice component", () => {
   });
 
   it("should edit Row successfully", async () => {
-    const { container } = render(<PrintInvoice data={data as any} />);
+    const { container } = render(
+      <PrintInvoice data={data as any} target="test" />
+    );
 
     expect(container).toBeTruthy();
 
@@ -180,17 +183,19 @@ describe("Invoice component", () => {
     })();
 
     const tableRows = container.querySelectorAll<HTMLElement>("table tbody tr");
-    const des = screen.getByTestId("1:description") as HTMLInputElement;
-    const qty = screen.getByTestId("1:qty") as HTMLInputElement;
-    const price = screen.getByTestId("1:price") as HTMLInputElement;
-
+    const des = container.getElementsByTagName("input")[3] as HTMLInputElement;
+    const qty = container.getElementsByTagName("input")[4] as HTMLInputElement;
+    const price = container.getElementsByTagName(
+      "input"
+    )[5] as HTMLInputElement;
+    screen.debug(des);
     fireEvent.change(des, { target: { value: "test" } });
     fireEvent.change(qty, { target: { value: "2" } });
     fireEvent.change(price, { target: { value: "2" } });
 
     expect(des?.value).toBe("test");
-    expect(qty?.value).toBe("2");
-    expect(price?.value).toBe("2");
+    expect(qty?.value).toBe("$2");
+    expect(price?.value).toBe("$2");
 
     expect(tableRows).toHaveLength(7);
 

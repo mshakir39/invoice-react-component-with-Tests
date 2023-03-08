@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 export interface AcceptButtonProps {
   text?: string;
   type?: "submit" | "reset" | "button";
+  id?: string;
   color_?: OverridableStringUnion<
     | "inherit"
     | "primary"
@@ -32,6 +33,7 @@ export const AcceptButton: React.FC<AcceptButtonProps> = ({
   fullWidth = true,
   disabled = false,
   dataTestId = "accept-btn",
+  id,
   sx = {},
 }) => {
   const doNothing = () => {
@@ -41,6 +43,7 @@ export const AcceptButton: React.FC<AcceptButtonProps> = ({
 
   return (
     <Button
+      id={id}
       onClick={debouncedCallback}
       type={type}
       data-testid={dataTestId}

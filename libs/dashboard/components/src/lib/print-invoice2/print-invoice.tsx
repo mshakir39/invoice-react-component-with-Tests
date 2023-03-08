@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Invoice from "../complex/Invoice/invoice";
 import PrintProvider, { Print, NoPrint } from "react-easy-print";
 import { Transporter, initMockTransport } from "@cupola/transporter";
-import MyButton from "../simple/Button/button";
+import MyButton from "../simple/accept-button/accept-button";
 
 export default function PrintInvoice() {
   const [response, setResponse] = useState<any>();
@@ -35,12 +35,7 @@ export default function PrintInvoice() {
           </Print>
         </div>
 
-        <MyButton
-          onClick={handleDownloadPdf}
-          label="Download"
-          variant="contained"
-          color="primary"
-        ></MyButton>
+        <MyButton onClick={handleDownloadPdf} text="Download"></MyButton>
       </NoPrint>
     </PrintProvider>
   );

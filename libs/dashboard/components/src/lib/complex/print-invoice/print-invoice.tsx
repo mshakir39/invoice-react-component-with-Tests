@@ -8,9 +8,10 @@ interface CanSendDataToParent {
 }
 type invoiceProps = {
   data?: InvoiceEntity;
+  target?: string;
 };
 
-export const PrintInvoice = ({ data }: invoiceProps) => {
+export const PrintInvoice = ({ data, target }: invoiceProps) => {
   const childRef = useRef<CanSendDataToParent>(null);
   const [response, setResponse] = useState<IInvoice>();
   const [called, setCalled] = useState<boolean>(false);
@@ -55,6 +56,7 @@ export const PrintInvoice = ({ data }: invoiceProps) => {
     <div data-testid="container">
       <Invoice
         id="pdf"
+        target={target}
         ref={childRef}
         data={response}
         call={called} //whenever download button is Clicked this will be pass
