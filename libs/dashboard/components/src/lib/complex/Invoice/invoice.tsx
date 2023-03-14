@@ -1,4 +1,3 @@
-import { makeStyles } from "@material-ui/core/styles";
 import Box from "@mui/material/Box";
 import {
   useEffect,
@@ -16,89 +15,20 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { IInvoice, IInvoiceRow } from "@cupola/types";
 import { getValueByPercentage } from "../../../helpers/getValueByPercentage";
-
-const useStyles = makeStyles({
-  flex: {
-    display: "flex",
-  },
-  table: {
-    borderCollapse: "collapse",
-  },
-  th: {
-    border: "1px solid black",
-    borderCollapse: "collapse",
-  },
-
-  td: {
-    border: "1px solid black",
-    borderCollapse: "collapse",
-    textAlign: "right",
-    lineHeight: "32px",
-  },
-  tdNoBorder: {
-    borderCollapse: "collapse",
-    textAlign: "right",
-    lineHeight: "32px",
-  },
-  amountTotal: {
-    borderCollapse: "collapse",
-    textAlign: "right",
-    lineHeight: "32px",
-    fontWeight: "bold",
-  },
-  description_td: {
-    border: "1px solid black",
-    borderCollapse: "collapse",
-    lineHeight: "32px",
-  },
-  flexColumn: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  inline_block: {
-    display: "inline-block",
-  },
-  from: {
-    display: "flex",
-    flexDirection: "column",
-    lineHeight: "28px",
-  },
-  fontWeightNormal: {
-    fontWeight: "normal",
-  },
-  container: {
-    height: "1128px",
-    width: "826px",
-    paddingLeft: "10%",
-    paddingRight: "10%",
-  },
-  title: {
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: "30px",
-  },
-  info_Container: {
-    display: "flex",
-    // flexDirection: "column",
-  },
-  info_Container_child: {
-    width: "50%",
-  },
-  bold: {
-    fontWeight: "bold",
-    marginBottom: "8px",
-  },
-  terms: {
-    fontWeight: "bold",
-    marginTop: "20px",
-  },
-  input_field: {
-    width: "-webkit-fill-available",
-    height: "27px",
-    border: "none",
-    outline: "none",
-  },
-});
+import {
+  StyledBoldSpan,
+  StyledContainer,
+  StyledFlex,
+  StyledFlexColumn,
+  StyledFrom,
+  StyledInfoContainerChild,
+  StyledInlineBlock,
+  StyledInput,
+  StyledTableData,
+  StyledTableDataNoBorder,
+  StyledTableHeader,
+  StyledTitle,
+} from "./invoice.styles";
 
 type Tprops = {
   ref?: HTMLElement;
@@ -133,7 +63,6 @@ const Invoice = forwardRef(
     const [invoiceInfo, setInvoiceInfo] = useState<IInvoice | undefined>({});
     const [subTotal, setSubTotal] = useState<number>(0);
     const [calls, setCalls] = useState<boolean | undefined>(false);
-    const classes = useStyles();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { id, value, name } = e.target;
@@ -267,7 +196,7 @@ const Invoice = forwardRef(
     }, [calls, invoiceInfo]);
 
     return (
-      <Box className={classes.container} sx={{ pt: 10 }} id="pdf">
+      <StyledContainer sx={{ pt: 10 }} id="pdf">
         <div id="invoice-container">
           <form onSubmit={downloadCallback}>
             {download ? (
@@ -281,135 +210,151 @@ const Invoice = forwardRef(
                 ></AcceptButton>
               </Box>
             ) : null}
-            <div className={classes.title}>INVOICE</div>
-            <Box className={classes.info_Container} sx={{ pt: 5 }}>
-              <div className={classes.info_Container_child}>
-                <div className={classes.flexColumn}>
-                  <Box className={classes.flex}>
+            <StyledTitle>INVOICE</StyledTitle>
+            <StyledFlex sx={{ pt: 5 }}>
+              <StyledInfoContainerChild>
+                <StyledFlexColumn>
+                  <StyledFlex>
                     <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>Invoice num :</span>
+                      <StyledBoldSpan>Invoice num :</StyledBoldSpan>
                     </div>
                     <div style={{ width: "75%" }}>
                       <span data-testid="invoiceNum">
                         {invoiceInfo?.invoiceNum}
                       </span>
                     </div>
-                  </Box>
-                  <Box className={classes.flex} sx={{ pt: 2 }}>
-                    <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>Invoice Date :</span>
-                    </div>
-                    <div style={{ width: "75%" }}>
-                      <span data-testid="invoiceDate">
-                        {invoiceInfo?.invoiceDate &&
-                          invoiceInfo?.invoiceDate.toString()}
-                      </span>
-                    </div>
-                  </Box>
-                  <Box className={classes.flex} sx={{ pt: 5 }}>
-                    <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>Terms :</span>
-                    </div>
-                    <div style={{ width: "75%" }}>
-                      <span data-testid="terms">{invoiceInfo?.terms}</span>
-                    </div>
-                  </Box>
-                  <Box className={classes.flex} sx={{ pt: 5 }}>
-                    <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>From :</span>
-                    </div>
-                    <div style={{ width: "75%" }}>
-                      <span className={classes.from}>
-                        <span data-testid="fromCompanyName">
-                          {invoiceInfo?.from && invoiceInfo.from["companyName"]}
+                  </StyledFlex>
+                  <Box sx={{ pt: 2 }}>
+                    <StyledFlex>
+                      <div style={{ width: "25%" }}>
+                        <StyledBoldSpan>Invoice Date :</StyledBoldSpan>
+                      </div>
+                      <div style={{ width: "75%" }}>
+                        <span data-testid="invoiceDate">
+                          {invoiceInfo?.invoiceDate &&
+                            invoiceInfo?.invoiceDate.toString()}
                         </span>
-                        <span data-testid="fromStreetAddress">
-                          {invoiceInfo?.from &&
-                            invoiceInfo.from["streetAddress"]}
-                        </span>
-                        <span data-testid="fromCity">
-                          {invoiceInfo?.from && invoiceInfo.from["city"]},
-                          {invoiceInfo?.from && invoiceInfo.from["state"]},
-                          {invoiceInfo?.from && invoiceInfo.from["zip"]}
-                        </span>
-                        <span data-testid="fromNumber">
-                          {invoiceInfo?.from && invoiceInfo.from["number"]}
-                        </span>
-                      </span>{" "}
-                    </div>
+                      </div>
+                    </StyledFlex>
                   </Box>
-                  <Box className={classes.flex} sx={{ pt: 5 }}>
-                    <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>Project :</span>
-                    </div>
-                    <div style={{ width: "75%" }}>
-                      <span data-testid="fromProjectName">
-                        {invoiceInfo?.projectName}
-                      </span>
-                    </div>
+                  <Box sx={{ pt: 5 }}>
+                    <StyledFlex>
+                      <div style={{ width: "25%" }}>
+                        <StyledBoldSpan>Terms :</StyledBoldSpan>
+                      </div>
+                      <div style={{ width: "75%" }}>
+                        <span data-testid="terms">{invoiceInfo?.terms}</span>
+                      </div>
+                    </StyledFlex>
                   </Box>
-                </div>
-              </div>
-              <div className={classes.info_Container_child}>
-                <div className={classes.flexColumn}>
-                  <Box className={classes.inline_block}>
+                  <Box sx={{ pt: 5 }}>
+                    <StyledFlex>
+                      <div style={{ width: "25%" }}>
+                        <StyledBoldSpan>From :</StyledBoldSpan>
+                      </div>
+                      <div style={{ width: "75%" }}>
+                        <StyledFrom>
+                          <span data-testid="fromCompanyName">
+                            {invoiceInfo?.from &&
+                              invoiceInfo.from["companyName"]}
+                          </span>
+                          <span data-testid="fromStreetAddress">
+                            {invoiceInfo?.from &&
+                              invoiceInfo.from["streetAddress"]}
+                          </span>
+                          <span data-testid="fromCity">
+                            {invoiceInfo?.from && invoiceInfo.from["city"]},
+                            {invoiceInfo?.from && invoiceInfo.from["state"]},
+                            {invoiceInfo?.from && invoiceInfo.from["zip"]}
+                          </span>
+                          <span data-testid="fromNumber">
+                            {invoiceInfo?.from && invoiceInfo.from["number"]}
+                          </span>
+                        </StyledFrom>{" "}
+                      </div>
+                    </StyledFlex>
+                  </Box>
+                  <Box sx={{ pt: 5 }}>
+                    <StyledFlex>
+                      <div style={{ width: "25%" }}>
+                        <StyledBoldSpan>Project :</StyledBoldSpan>
+                      </div>
+                      <div style={{ width: "75%" }}>
+                        <span data-testid="fromProjectName">
+                          {invoiceInfo?.projectName}
+                        </span>
+                      </div>
+                    </StyledFlex>
+                  </Box>
+                </StyledFlexColumn>
+              </StyledInfoContainerChild>
+              <StyledFlex>
+                <StyledFlexColumn>
+                  <StyledInlineBlock>
                     <div style={{ width: "25%" }}>
                       <img
-                        className={classes.bold}
-                        style={{ height: "100px" }}
+                        style={{
+                          height: "100px",
+                          fontWeight: "bold",
+                          marginBottom: "8px",
+                        }}
                         alt=""
                         data-testid="invoiceLogo"
                         src={invoiceInfo?.invoiceLogo}
                       ></img>
                     </div>
                     <div style={{ width: "75%" }}></div>
+                  </StyledInlineBlock>
+                  <Box sx={{ pt: 5 }}>
+                    <StyledFlex>
+                      <div style={{ width: "25%" }}>
+                        <StyledBoldSpan>Invoice For :</StyledBoldSpan>
+                      </div>
+                      <div style={{ width: "75%" }}>
+                        <StyledFrom>
+                          <span data-testid="invoiceForCompanyName">
+                            {invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["companyName"]}
+                          </span>
+                          <span data-testid="invoiceForStreetAddress">
+                            {invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["streetAddress"]}
+                          </span>
+                          <span data-testid="invoiceForCity">
+                            {invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["city"] &&
+                              invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["city"]}
+                            ,
+                            {invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["state"]}
+                            ,
+                            {invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["zip"]}
+                          </span>
+                          <span data-testid="invoiceForNumber">
+                            {invoiceInfo?.invoiceFor &&
+                              invoiceInfo.invoiceFor["number"]}
+                          </span>
+                        </StyledFrom>{" "}
+                      </div>
+                    </StyledFlex>
                   </Box>
-                  <Box className={classes.flex} sx={{ pt: 5 }}>
-                    <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>Invoice For :</span>
-                    </div>
-                    <div style={{ width: "75%" }}>
-                      <span className={classes.from}>
-                        <span data-testid="invoiceForCompanyName">
-                          {invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["companyName"]}
+                  <Box sx={{ pt: 5 }}>
+                    <StyledFlex>
+                      <div style={{ width: "25%" }}>
+                        <StyledBoldSpan>Project :</StyledBoldSpan>
+                      </div>
+                      <div style={{ width: "75%" }}>
+                        <span data-testid="invoiceForProjectName">
+                          {invoiceInfo?.projectName}
                         </span>
-                        <span data-testid="invoiceForStreetAddress">
-                          {invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["streetAddress"]}
-                        </span>
-                        <span data-testid="invoiceForCity">
-                          {invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["city"] &&
-                            invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["city"]}
-                          ,
-                          {invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["state"]}
-                          ,
-                          {invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["zip"]}
-                        </span>
-                        <span data-testid="invoiceForNumber">
-                          {invoiceInfo?.invoiceFor &&
-                            invoiceInfo.invoiceFor["number"]}
-                        </span>
-                      </span>{" "}
-                    </div>
+                      </div>
+                    </StyledFlex>
                   </Box>
-                  <Box className={classes.flex} sx={{ pt: 5 }}>
-                    <div style={{ width: "25%" }}>
-                      <span className={classes.bold}>Project :</span>
-                    </div>
-                    <div style={{ width: "75%" }}>
-                      <span data-testid="invoiceForProjectName">
-                        {invoiceInfo?.projectName}
-                      </span>
-                    </div>
-                  </Box>
-                </div>
-              </div>
-            </Box>
+                </StyledFlexColumn>
+              </StyledFlex>
+            </StyledFlex>
 
             {invoiceInfo?.type === "custom" && (
               <Box
@@ -440,27 +385,32 @@ const Invoice = forwardRef(
 
             <Box sx={{ pt: 10 }}>
               <table
-                className={classes.table}
                 style={{
                   width: "100%",
+                  borderCollapse: "collapse",
                 }}
                 data-testid="table"
               >
                 <tbody>
                   <tr>
-                    <th className={classes.th}>Description</th>
-                    <th className={classes.th}>Qty</th>
-                    <th className={classes.th}>Price</th>
-                    <th className={classes.th}>Amount</th>
+                    <StyledTableHeader>Description</StyledTableHeader>
+                    <StyledTableHeader>Qty</StyledTableHeader>
+                    <StyledTableHeader>Price</StyledTableHeader>
+                    <StyledTableHeader>Amount</StyledTableHeader>
                   </tr>
                   {invoiceInfo?.invoiceData &&
                     invoiceInfo.invoiceData.map(
                       (Item: IInvoiceRow, i: number) => (
                         <tr key={i}>
-                          <td className={classes.description_td}>
+                          <StyledTableData
+                            style={{
+                              border: "1px solid black",
+                              borderCollapse: "collapse",
+                              lineHeight: "32px",
+                            }}
+                          >
                             {data?.type === "custom" ? (
-                              <input
-                                className={classes.input_field}
+                              <StyledInput
                                 required
                                 data-cy="text-input"
                                 id={`${i}:description`}
@@ -472,11 +422,8 @@ const Invoice = forwardRef(
                             ) : (
                               Item.description
                             )}
-                          </td>
-                          <td
-                            className={classes.td}
-                            style={{ textAlign: "left" }}
-                          >
+                          </StyledTableData>
+                          <StyledTableData style={{ textAlign: "left" }}>
                             {
                               // this Component has more functionality that was used before
                               // thats why i have replaced input field by DollarInput
@@ -486,8 +433,6 @@ const Invoice = forwardRef(
                                 onChange={handleChange}
                                 id={`${i}:qty`}
                                 value={Item.qty}
-                                dataTestId={`${i}:qty`}
-                                data-cy="text-input"
                                 sx={{ height: "100%" }}
                                 inputProps={{
                                   disableUnderline: true,
@@ -497,8 +442,8 @@ const Invoice = forwardRef(
                             ) : (
                               Item.qty
                             )}
-                          </td>
-                          <td className={classes.td}>
+                          </StyledTableData>
+                          <StyledTableData>
                             <Box
                               pl={1}
                               style={{ display: "flex", alignItems: "center" }}
@@ -508,8 +453,6 @@ const Invoice = forwardRef(
                                   onChange={handleChange}
                                   id={`${i}:price`}
                                   value={Item.price}
-                                  dataTestId={`${i}:price`}
-                                  data-cy="text-input"
                                   sx={{ height: "100%" }}
                                   inputProps={{
                                     disableUnderline: true,
@@ -520,8 +463,8 @@ const Invoice = forwardRef(
                                 `${Item.price}`
                               )}
                             </Box>
-                          </td>
-                          <td className={classes.td} id={`${i}amount`}>
+                          </StyledTableData>
+                          <StyledTableData id={`${i}amount`}>
                             ${" "}
                             {numberWithCommas(
                               Number(
@@ -530,11 +473,11 @@ const Invoice = forwardRef(
                                   : Item.price * Item.qty
                               ).toFixed(2)
                             )}
-                          </td>
+                          </StyledTableData>
                           {invoiceInfo?.type === "custom" && (
                             <td className="hide">
                               <Box position={"absolute"}>
-                                {Number(i) !== 0 && (
+                                {Number(i) !== 0 ? (
                                   <DeleteIcon
                                     style={{
                                       top: "-13px",
@@ -548,6 +491,8 @@ const Invoice = forwardRef(
                                       marginLeft: "10px",
                                     }}
                                   />
+                                ) : (
+                                  ""
                                 )}
                               </Box>
                             </td>
@@ -559,27 +504,27 @@ const Invoice = forwardRef(
                   <tr>
                     <td></td>
                     <td></td>
-                    <td className={classes.tdNoBorder}>Sub Total</td>
-                    <td className={classes.td} id="subTotal">
+                    <StyledTableDataNoBorder>Sub Total</StyledTableDataNoBorder>
+                    <StyledTableData id="subTotal">
                       {subTotal !== 0
                         ? "$ " + numberWithCommas(subTotal.toFixed(2))
                         : ""}
-                    </td>
+                    </StyledTableData>
                   </tr>
                   <tr>
                     <td></td>
                     <td></td>
-                    <td className={classes.tdNoBorder}>Tax Rate</td>
-                    <td className={classes.td}>
+                    <StyledTableDataNoBorder>Tax Rate</StyledTableDataNoBorder>
+                    <StyledTableData>
                       {" "}
                       {invoiceInfo?.taxRate + " %"}
-                    </td>
+                    </StyledTableData>
                   </tr>
                   <tr>
                     <td></td>
                     <td></td>
-                    <td className={classes.tdNoBorder}>Tax</td>
-                    <td className={classes.td}>
+                    <StyledTableDataNoBorder>Tax</StyledTableDataNoBorder>
+                    <StyledTableData>
                       {" "}
                       {getValueByPercentage(
                         invoiceInfo?.taxRate ? invoiceInfo?.taxRate : 0,
@@ -593,14 +538,15 @@ const Invoice = forwardRef(
                             ).toFixed(2)
                           )
                         : ""}
-                    </td>
+                    </StyledTableData>
                   </tr>
                   <tr>
                     <td></td>
                     <td></td>
-                    <td className={classes.amountTotal}>Amount Due</td>
-                    <td
-                      className={classes.td}
+                    <StyledTableDataNoBorder>
+                      Amount Due
+                    </StyledTableDataNoBorder>
+                    <StyledTableData
                       style={{ fontWeight: "bold" }}
                       id="amountDue"
                     >
@@ -624,13 +570,13 @@ const Invoice = forwardRef(
                           )}
                      `
                         : ""}
-                    </td>
+                    </StyledTableData>
                   </tr>
                 </tbody>
               </table>
 
               <Box sx={{ pt: 8 }}>
-                <span className={classes.bold}>Notes</span>
+                <StyledBoldSpan>Notes</StyledBoldSpan>
                 <br></br>
 
                 <span style={{ paddingTop: "8px" }} data-testid="notes">
@@ -641,7 +587,7 @@ const Invoice = forwardRef(
             </Box>
           </form>
         </div>
-      </Box>
+      </StyledContainer>
     );
   }
 );
